@@ -315,10 +315,10 @@
             document.getElementById('datiConfronto')?.style?.display = (document.getElementById('impresaStato').value === 'attiva') ? 'block' : 'none';
         }
 
-        // carica CSV automaticamente da percorso relativo (data/comuni_localizzazione.csv)
+        // carica CSV automaticamente da percorso relativo (comuni_localizzazione.csv)
         async function loadComuniAutomatico() {
             try {
-                const resp = await fetch('data/comuni_localizzazione.csv');
+                const resp = await fetch('comuni_localizzazione.csv');
                 if (!resp.ok) throw new Error('CSV non trovato: ' + resp.status);
                 // supporta ISO-8859-1 decoding
                 const buf = await resp.arrayBuffer();
