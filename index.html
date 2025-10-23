@@ -35,7 +35,10 @@
         .result-card { background:white; padding:16px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.08); border-left:4px solid #667eea; }
         .result-value { font-size:28px; font-weight:700; color:#667eea; margin-top:8px; }
         .result-status { display:inline-block; padding:6px 10px; border-radius:20px; font-weight:700; margin-top:10px; font-size:12px; }
-        .status-excellent { background:#d4edda; color:#155724; } .status-good { background:#d1ecf1; color:#0c5460; } .status-warning { background:#fff3cd; color:#856404; } .status-poor { background:#f8d7da; color:#721c24; }
+        .status-excellent { background:#d4edda; color:#155724; }
+        .status-good { background:#d1ecf1; color:#0c5460; }
+        .status-warning { background:#fff3cd; color:#856404; }
+        .status-poor { background:#f8d7da; color:#721c24; }
     </style>
 </head>
 <body>
@@ -142,10 +145,30 @@
                     <table class="occupancy-table">
                         <thead><tr><th>Periodo</th><th>Giorni</th><th>Occupazione %</th><th>Camere Vendute</th></tr></thead>
                         <tbody>
-                            <tr><td><strong>Alta Stagione</strong></td><td><input type="number" id="giorniAlta" value="120" min="0" onchange="updateOccupancy()"></td><td><input type="number" id="occAlta" value="85" min="0" max="100" onchange="updateOccupancy()">%</td><td id="camereAlta">0</td></tr>
-                            <tr><td><strong>Media Stagione</strong></td><td><input type="number" id="giorniMedia" value="120" min="0" onchange="updateOccupancy()"></td><td><input type="number" id="occMedia" value="60" min="0" max="100" onchange="updateOccupancy()">%</td><td id="camereMedia">0</td></tr>
-                            <tr><td><strong>Bassa Stagione</strong></td><td><input type="number" id="giorniBassa" value="125" min="0" onchange="updateOccupancy()"></td><td><input type="number" id="occBassa" value="35" min="0" max="100" onchange="updateOccupancy()">%</td><td id="camereBassa">0</td></tr>
-                            <tr style="background:#f0f0f0;font-weight:bold;"><td>TOTALE</td><td id="giorniTotali">365</td><td id="occMediaDisplay">-</td><td id="camereTotali">0</td></tr>
+                            <tr>
+                                <td><strong>Alta Stagione</strong></td>
+                                <td><input type="number" id="giorniAlta" value="120" min="0" onchange="updateOccupancy()"></td>
+                                <td><input type="number" id="occAlta" value="80" min="0" max="100" onchange="updateOccupancy()"></td>
+                                <td id="camereAlta">0</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Media Stagione</strong></td>
+                                <td><input type="number" id="giorniMedia" value="120" min="0" onchange="updateOccupancy()"></td>
+                                <td><input type="number" id="occMedia" value="50" min="0" max="100" onchange="updateOccupancy()"></td>
+                                <td id="camereMedia">0</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bassa Stagione</strong></td>
+                                <td><input type="number" id="giorniBassa" value="125" min="0" onchange="updateOccupancy()"></td>
+                                <td><input type="number" id="occBassa" value="30" min="0" max="100" onchange="updateOccupancy()"></td>
+                                <td id="camereBassa">0</td>
+                            </tr>
+                            <tr style="background:#f0f0f0;font-weight:bold;">
+                                <td>TOTALE</td>
+                                <td id="giorniTotali">365</td>
+                                <td id="occMediaDisplay">-</td>
+                                <td id="camereTotali">0</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -163,7 +186,10 @@
                         <div class="input-group"><label>Prezzo Medio Camera (ADR) (€) *</label><input type="number" id="adr" value="75" min="1" onchange="calcola()"></div>
                         <div class="input-group"><label>Fatturato Ristorazione (€)</label><input type="number" id="fattRistorazione" value="0" min="0" onchange="calcola()"></div>
                         <div class="input-group"><label>Altri Ricavi (€)</label><input type="number" id="altriRicavi" value="0" min="0" onchange="calcola()"></div>
-                        <div class="input-group" style="background:#e8f4f8;padding:12px;border-radius:8px;"><label>Fatturato Totale Previsto (€)</label><input type="text" id="fatturatoTotale" readonly style="background:white;font-weight:700;"></div>
+                        <div class="input-group" style="background:#e8f4f8;padding:12px;border-radius:8px;">
+                            <label>Fatturato Totale Previsto (€)</label>
+                            <input type="text" id="fatturatoTotale" readonly>
+                        </div>
                     </div>
                 </div>
 
@@ -315,10 +341,10 @@
             document.getElementById('datiConfronto')?.style?.display = (document.getElementById('impresaStato').value === 'attiva') ? 'block' : 'none';
         }
 
-        // carica CSV automaticamente da percorso relativo (comuni_localizzazione.csv)
+        // carica CSV automaticamente da percorso relativo (data/comuni_localizzazione.csv)
         async function loadComuniAutomatico() {
             try {
-                const resp = await fetch('comuni_localizzazione.csv');
+                const resp = await fetch('data/comuni_localizzazione.csv');
                 if (!resp.ok) throw new Error('CSV non trovato: ' + resp.status);
                 // supporta ISO-8859-1 decoding
                 const buf = await resp.arrayBuffer();
