@@ -1270,21 +1270,21 @@ RAGUSA;RG;M088;VITTORIA;1;0;1;0`;
             const r = risultati;
             let punteggi = {a: 0, b: 0, c: 0, d: 0, e: 0, f: 0};
 
-           // A) INVESTIMENTO / OCCUPAZIONE
-            const soglia = r.statoImpresa === 'inattiva' ? 150000 : 350000;
-            let denomULA = 0;
-            if (r.statoImpresa === 'inattiva') denomULA = r.dipendentiPrevisti || 0;
-                else denomULA = (r.nuoviDipendenti > 0) ? r.nuoviDipendenti : 0;
+          // A) INVESTIMENTO / OCCUPAZIONE
+const soglia = r.statoImpresa === 'inattiva' ? 150000 : 350000;
+let denomULA = 0;
+if (r.statoImpresa === 'inattiva') denomULA = r.dipendentiPrevisti || 0;
+else denomULA = (r.nuoviDipendenti > 0) ? r.nuoviDipendenti : 0;
 
-            if (r.investimentoTotale >= soglia && denomULA > 0) {
-            let investimentoPerULA = r.investimentoTotale / denomULA;
-            if (investimentoPerULA <= soglia / 2) punteggi.a = 6;
-              else if (investimentoPerULA <= soglia / 1.5) punteggi.a = 4;
-              else if (investimentoPerULA <= soglia) punteggi.a = 2;
-              else punteggi.a = 0;
-            } else {
-            punteggi.a = 0;
-            }
+if (r.investimentoTotale >= soglia && denomULA > 0) {
+  let investimentoPerULA = r.investimentoTotale / denomULA;
+  if (investimentoPerULA <= soglia / 2) punteggi.a = 6;
+  else if (investimentoPerULA <= soglia / 1.5) punteggi.a = 4;
+  else if (investimentoPerULA <= soglia) punteggi.a = 2;
+  else punteggi.a = 0;
+} else {
+  punteggi.a = 0;
+}
 
 document.getElementById('griglia_invula').textContent = '€' + (r.investimentoTotale ? Math.round(r.investimentoTotale).toLocaleString('it-IT') : 'N/A');
 document.getElementById('griglia_invula_punti').textContent = punteggi.a + ' punti';
