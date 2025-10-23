@@ -1,71 +1,226 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Calcolatore Business Plan Turistico - Bando Sicilia FSC 2021-2027</title>
+    
+    <!-- Librerie esterne necessarie -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px; color: #333;
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            padding: 20px; 
+            color: #333; 
         }
-        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 30px; text-align: center; }
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            overflow: hidden; 
+        }
+        .header { 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+        }
         .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .header p { opacity: 0.9; font-size: 14px; }
-        .tabs { display: flex; background: #f5f5f5; border-bottom: 2px solid #ddd; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; border-right: 1px solid #ddd; }
-        .tab:hover { background: #e0e0e0; }
-        .tab.active { background: white; color: #1e3c72; border-bottom: 3px solid #1e3c72; }
-        .content { padding: 30px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .section { margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 10px; border-left: 4px solid #1e3c72; }
-        .section h2 { color: #1e3c72; margin-bottom: 20px; font-size: 20px; display: flex; align-items: center; }
-        .section h2::before { content: "▶"; margin-right: 10px; color: #667eea; }
-        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .input-group { display: flex; flex-direction: column; }
-        .input-group label { font-weight: 600; margin-bottom: 8px; color: #555; font-size: 14px; }
-        .input-group input, .input-group select, .input-group button { padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; transition: all 0.3s; }
-        .input-group input:focus, .input-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-        .input-group .hint { font-size: 12px; color: #888; margin-top: 5px; font-style: italic; }
-        .btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin: 20px 0; display: inline-block; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); }
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .result-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 4px solid #667eea; }
-        .result-card h3 { color: #1e3c72; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .result-value { font-size: 32px; font-weight: 700; color: #667eea; margin: 10px 0; }
-        .result-benchmark { font-size: 12px; color: #888; margin-top: 5px; }
-        .result-status { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 10px; }
-        .status-excellent { background: #d4edda; color: #155724; }
-        .status-good { background: #d1ecf1; color: #0c5460; }
-        .status-warning { background: #fff3cd; color: #856404; }
-        .status-poor { background: #f8d7da; color: #721c24; }
-        .score-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 20px 0; }
-        .score-card h3 { font-size: 18px; margin-bottom: 15px; }
-        .score-value { font-size: 48px; font-weight: 700; margin: 10px 0; }
-        .score-max { font-size: 16px; opacity: 0.9; }
-        .occupancy-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 10px; overflow: hidden; }
-        .occupancy-table th { background: #1e3c72; color: white; padding: 15px; text-align: left; font-weight: 600; }
-        .occupancy-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .tabs { display:flex; background:#f5f5f5; border-bottom:2px solid #ddd; }
+        .tab { 
+            flex:1; 
+            padding:15px; 
+            text-align:center; 
+            cursor:pointer; 
+            font-weight:600; 
+            border-right:1px solid #ddd; 
+            transition: all 0.3s ease;
+        }
+        .tab:hover { background: #e8e8e8; }
+        .tab.active { 
+            background:white; 
+            color:#1e3c72; 
+            border-bottom:3px solid #1e3c72; 
+        }
+        .content { padding:30px; }
+        .tab-content { display:none; animation: fadeIn 0.5s; }
+        .tab-content.active { display:block; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .section { 
+            margin-bottom:30px; 
+            padding:20px; 
+            background:#f9f9f9; 
+            border-radius:10px; 
+            border-left:4px solid #1e3c72; 
+        }
+        .input-grid { 
+            display:grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap:20px; 
+        }
+        .input-group { display:flex; flex-direction:column; }
+        .input-group label { 
+            font-weight:600; 
+            margin-bottom:8px; 
+            color:#555; 
+            font-size:14px; 
+        }
+        .hint { 
+            font-size: 12px; 
+            color: #666; 
+            margin-top: 5px; 
+            font-style: italic; 
+        }
+        input, select, button { 
+            padding:12px; 
+            border:2px solid #ddd; 
+            border-radius:8px; 
+            font-size:14px; 
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus { 
+            outline:none; 
+            border-color:#667eea; 
+            box-shadow:0 0 0 3px rgba(102,126,234,0.08); 
+        }
+        .btn { 
+            background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); 
+            color:white; 
+            padding:12px 20px; 
+            border:none; 
+            border-radius:8px; 
+            cursor:pointer; 
+            font-weight:600; 
+            transition: transform 0.2s ease;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .occupancy-table { 
+            width:100%; 
+            border-collapse:collapse; 
+            margin:20px 0; 
+            background:white; 
+            border-radius:10px; 
+            overflow:hidden; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .occupancy-table th { 
+            background:#1e3c72; 
+            color:white; 
+            padding:12px; 
+            text-align:left; 
+            font-weight:600; 
+        }
+        .occupancy-table td { 
+            padding:12px; 
+            border-bottom:1px solid #eee; 
+        }
         .occupancy-table tr:hover { background: #f5f5f5; }
-        .occupancy-table input { width: 80px; padding: 8px; border: 2px solid #ddd; border-radius: 5px; text-align: center; }
-        .alert { padding: 15px; border-radius: 8px; margin: 20px 0; }
-        .alert-info { background: #d1ecf1; border-left: 4px solid #17a2b8; color: #0c5460; }
-        .alert-warning { background: #fff3cd; border-left: 4px solid #ffc107; color: #856404; }
-        .print-btn { background: #28a745; float: right; }
-        @media print { body { background: white; padding: 0; } .tabs, .btn { display: none; } .container { box-shadow: none; } }
-        .legend { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 13px; }
-        .legend-item { display: inline-block; margin-right: 20px; margin-bottom: 10px; }
-        .legend-color { display: inline-block; width: 15px; height: 15px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
-
-        /* validation styles */
-        .invalid-input { border-color: #e74c3c !important; box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08); }
-        #validationErrors { margin-top: 10px; padding: 12px; border-radius: 8px; display: none; }
-        #validationErrors ul { margin-left: 18px; }
+        .alert { 
+            padding:12px; 
+            border-radius:8px; 
+            margin:12px 0; 
+        }
+        .alert-info { 
+            background:#d1ecf1; 
+            color:#0c5460; 
+            border-left:4px solid #17a2b8; 
+        }
+        .alert-warning { 
+            background:#fff3cd; 
+            color:#856404; 
+            border-left:4px solid #ffc107; 
+        }
+        .alert-danger { 
+            background:#f8d7da; 
+            color:#721c24; 
+            border-left:4px solid #dc3545; 
+        }
+        .alert-success { 
+            background:#d4edda; 
+            color:#155724; 
+            border-left:4px solid #28a745; 
+        }
+        .invalid-input { 
+            border-color: #e74c3c !important; 
+            box-shadow: 0 0 0 3px rgba(231,76,60,0.08); 
+        }
+        #validationErrors { 
+            display:none; 
+            margin-top:10px; 
+            padding:12px; 
+            border-radius:8px; 
+        }
+        .results-grid { 
+            display:grid; 
+            grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); 
+            gap:16px; 
+        }
+        .result-card { 
+            background:white; 
+            padding:16px; 
+            border-radius:8px; 
+            box-shadow:0 4px 10px rgba(0,0,0,0.08); 
+            border-left:4px solid #667eea; 
+            transition: transform 0.2s ease;
+        }
+        .result-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow:0 6px 20px rgba(0,0,0,0.15); 
+        }
+        .result-value { 
+            font-size:28px; 
+            font-weight:700; 
+            color:#667eea; 
+            margin-top:8px; 
+        }
+        .result-status { 
+            display:inline-block; 
+            padding:6px 10px; 
+            border-radius:20px; 
+            font-weight:700; 
+            margin-top:10px; 
+            font-size:12px; 
+        }
+        .status-excellent { background:#d4edda; color:#155724; }
+        .status-good { background:#d1ecf1; color:#0c5460; }
+        .status-warning { background:#fff3cd; color:#856404; }
+        .status-poor { background:#f8d7da; color:#721c24; }
+        
+        .score-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .score-table th {
+            background: #2a5298;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .score-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .total-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1e3c72;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -83,32 +238,26 @@
         </div>
 
         <div class="content">
-            <!-- TAB 1: DATI BASE -->
+            <!-- TAB 1: Dati Base -->
             <div class="tab-content active">
                 <div class="alert alert-info">
-                    <strong>ℹ️ Informazioni:</strong> Inserisci i dati strutturali della tua attività turistica. Tutti i campi sono necessari per calcolare correttamente gli indici.
+                    ℹ️ Inserisci i dati base della tua struttura ricettiva per calcolare il business plan
                 </div>
 
                 <div class="section">
-                    <h2>Carica lista Comuni (CSV)</h2>
+                    <h2>Informazioni Cliente</h2>
                     <div class="input-grid">
                         <div class="input-group">
-                            <label>File CSV comuni (separatore ';')</label>
-                            <input type="file" id="csvComuniFile" accept=".csv" onchange="handleCSVUpload(event)">
-                            <span class="hint">Il file fornito contiene i comuni e gli indicatori di localizzazione. Puoi caricarlo per abilitare il lookup automatizzato.</span>
+                            <label>Denominazione Cliente *</label>
+                            <input type="text" id="denominazioneCliente" placeholder="Es. Hotel Paradise SRL">
+                            <span class="hint">Nome della società (verrà incluso negli export)</span>
                         </div>
                         <div class="input-group">
-                            <label>Comune (uso per criterio F)</label>
-                            <input list="comuniList" id="comuneInput" placeholder="Scrivi o scegli un comune (es. BRONTE)" onchange="comuneChanged()">
-                            <datalist id="comuniList"></datalist>
-                            <span class="hint">Seleziona o scrivi il comune per calcolare automaticamente il punteggio di localizzazione.</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Verifica Validità Dati</label>
-                            <button class="btn" onclick="validateInputs(true)">Verifica Dati</button>
+                            <label>Comune</label>
+                            <input type="text" id="comuneInput" placeholder="Es. Palermo">
+                            <span class="hint">Comune dove è ubicata la struttura</span>
                         </div>
                     </div>
-                    <div id="validationErrors" class="alert alert-warning"></div>
                 </div>
 
                 <div class="section">
@@ -140,23 +289,19 @@
                     <div class="input-grid">
                         <div class="input-group">
                             <label>Numero Camere/Unità Abitative *</label>
-                            <input type="number" id="numeroCamere" value="1" min="1">
-                            <span class="hint">Totale unità ricettive disponibili</span>
+                            <input type="number" id="numeroCamere" value="10" min="1" />
                         </div>
                         <div class="input-group">
                             <label>Giorni Apertura Annui *</label>
-                            <input type="number" id="giorniApertura" value="365" min="1" max="365">
-                            <span class="hint">Giorni operativi previsti (max 365)</span>
+                            <input type="number" id="giorniApertura" value="365" min="1" max="365" />
                         </div>
                         <div class="input-group">
                             <label>Numero Dipendenti Attuali (ULA)</label>
-                            <input type="number" id="dipendentiAttuali" value="0" min="0" step="0.5">
-                            <span class="hint">Unità Lavorative Anno attuale (0 se nuova)</span>
+                            <input type="number" id="dipendentiAttuali" value="0" min="0" step="0.5" />
                         </div>
                         <div class="input-group">
                             <label>Numero Dipendenti Previsti (ULA) *</label>
-                            <input type="number" id="dipendentiPrevisti" value="1" min="1" step="0.5">
-                            <span class="hint">ULA anno a regime</span>
+                            <input type="number" id="dipendentiPrevisti" value="2" min="0" step="0.5" />
                         </div>
                     </div>
                 </div>
@@ -166,984 +311,634 @@
                     <div class="input-grid">
                         <div class="input-group">
                             <label>Investimento Totale (€) *</label>
-                            <input type="number" id="investimentoTotale" value="50000" min="50000" max="3500000">
-                            <span class="hint">Min €50.000 - Max €3.500.000</span>
+                            <input type="number" id="investimentoTotale" value="100000" min="50000" max="3500000">
                         </div>
                         <div class="input-group">
                             <label>Investimenti Operativi (€) *</label>
-                            <input type="number" id="investimentiOperativi" value="0" min="0">
-                            <span class="hint">Macchinari, impianti, arredi, software</span>
+                            <input type="number" id="investimentiOperativi" value="80000" min="0">
+                            <span class="hint">Investimenti in attrezzature, macchinari, ecc.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="datiPrecedenti" style="display:none;">
+                    <h2>Dati Anno Precedente (per imprese attive)</h2>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Fatturato Anno Precedente (€)</label>
+                            <input type="number" id="fattPrecedente" value="0" min="0">
                         </div>
                         <div class="input-group">
-                            <label>Investimenti Immobiliari (€)</label>
-                            <input type="number" id="investimentiImmobiliari" value="0" min="0">
-                            <span class="hint">Opere edili, ristrutturazioni</span>
+                            <label>Risultato Operativo Precedente (€)</label>
+                            <input type="number" id="risOpPrecedente" value="0" min="0">
                         </div>
                         <div class="input-group">
-                            <label>Contributo Richiesto (€) *</label>
-                            <input type="number" id="contributoRichiesto" value="0" min="50000">
-                            <span class="hint">Importo agevolazione richiesta</span>
+                            <label>Capitale Investito Precedente (€)</label>
+                            <input type="number" id="capInvPrecedente" value="0" min="0">
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <h2>Previsione Occupazione</h2>
-                    <p style="margin-bottom: 15px; color: #666;">Inserisci le percentuali di occupazione previste per periodo stagionale:</p>
-
+                    <h2>Previsioni Occupancy</h2>
                     <table class="occupancy-table">
                         <thead>
                             <tr>
-                                <th>Periodo</th>
+                                <th>Mese</th>
+                                <th>Occupancy %</th>
+                                <th>Camere Occupate</th>
                                 <th>Giorni</th>
-                                <th>Occupazione %</th>
-                                <th>Camere Vendute</th>
+                            </tr>
+                        </thead>
+                        <tbody id="occupancyTable">
+                            <!-- Generato dinamicamente -->
+                        </tbody>
+                    </table>
+                    <button class="btn" onclick="resetOccupancy()">Reset Valori Default</button>
+                </div>
+            </div>
+
+            <!-- TAB 2: Dati Economici -->
+            <div class="tab-content">
+                <div class="section">
+                    <h2>Ricavi</h2>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>ADR - Tariffa Media Camera (€) *</label>
+                            <input type="number" id="adr" value="80" min="1" step="0.01">
+                            <span class="hint">Average Daily Rate</span>
+                        </div>
+                        <div class="input-group">
+                            <label>Fatturato Ristorazione (€/anno)</label>
+                            <input type="number" id="fattRistorazione" value="0" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Altri Ricavi (€/anno)</label>
+                            <input type="number" id="altriRicavi" value="0" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Costi Operativi</h2>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Costo del Personale (€/anno) *</label>
+                            <input type="number" id="costoPersonale" value="50000" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Costi Materie Prime (€/anno)</label>
+                            <input type="number" id="costiMaterie" value="10000" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Costi Servizi (€/anno)</label>
+                            <input type="number" id="costiServizi" value="15000" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Altri Costi Operativi (€/anno)</label>
+                            <input type="number" id="altriCosti" value="5000" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Parametri Finanziari</h2>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Anni Ammortamento</label>
+                            <input type="number" id="anniAmmortamento" value="10" min="1" max="20">
+                        </div>
+                        <div class="input-group">
+                            <label>Aliquota Fiscale (%)</label>
+                            <input type="number" id="aliquotaFiscale" value="24" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn" onclick="calcola()" style="font-size: 18px; padding: 15px 40px;">
+                        📊 CALCOLA BUSINESS PLAN
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 3: Indici & Risultati -->
+            <div class="tab-content">
+                <div id="reportArea">
+                    <div class="alert alert-warning" id="noResultsAlert">
+                        ⚠️ Clicca su "CALCOLA BUSINESS PLAN" nella tab precedente per visualizzare i risultati
+                    </div>
+                    
+                    <div id="resultsContainer" style="display:none;">
+                        <div class="section">
+                            <h2>Risultati Economici</h2>
+                            <div class="results-grid">
+                                <div class="result-card">
+                                    <div>💰 Fatturato Totale</div>
+                                    <div class="result-value" id="resFatturato">€ 0</div>
+                                </div>
+                                <div class="result-card">
+                                    <div>📉 Costi Operativi</div>
+                                    <div class="result-value" id="resCosti">€ 0</div>
+                                </div>
+                                <div class="result-card">
+                                    <div>📊 EBITDA</div>
+                                    <div class="result-value" id="resEbitda">€ 0</div>
+                                </div>
+                                <div class="result-card">
+                                    <div>✅ Risultato Netto</div>
+                                    <div class="result-value" id="resNetto">€ 0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>KPI Principali</h2>
+                            <div class="results-grid">
+                                <div class="result-card">
+                                    <div>📈 ROS</div>
+                                    <div class="result-value" id="resRos">0%</div>
+                                    <span class="result-status" id="statusRos">-</span>
+                                </div>
+                                <div class="result-card">
+                                    <div>💹 ROI</div>
+                                    <div class="result-value" id="resRoi">0%</div>
+                                    <span class="result-status" id="statusRoi">-</span>
+                                </div>
+                                <div class="result-card">
+                                    <div>📊 EBITDA Margin</div>
+                                    <div class="result-value" id="resEbitdaMargin">0%</div>
+                                    <span class="result-status" id="statusEbitdaMargin">-</span>
+                                </div>
+                                <div class="result-card">
+                                    <div>🏨 RevPAR</div>
+                                    <div class="result-value" id="resRevpar">€ 0</div>
+                                    <span class="result-status" id="statusRevpar">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>Altri Indicatori</h2>
+                            <div class="results-grid">
+                                <div class="result-card">
+                                    <div>🔄 TOR (Occupancy Media)</div>
+                                    <div class="result-value" id="resTor">0%</div>
+                                </div>
+                                <div class="result-card">
+                                    <div>💼 GOPPAR</div>
+                                    <div class="result-value" id="resGoppar">€ 0</div>
+                                </div>
+                                <div class="result-card">
+                                    <div>👥 Labor Cost %</div>
+                                    <div class="result-value" id="resLaborCost">0%</div>
+                                </div>
+                                <div class="result-card">
+                                    <div>⚡ Produttività/ULA</div>
+                                    <div class="result-value" id="resProduttivita">€ 0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="btn" onclick="exportPDF()">📄 Esporta PDF</button>
+                            <button class="btn" onclick="exportExcel()">📊 Esporta Excel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Punteggio Bando -->
+            <div class="tab-content">
+                <div class="section">
+                    <h2>Griglia di Valutazione Bando</h2>
+                    <div class="alert alert-info">
+                        ℹ️ Il punteggio viene calcolato automaticamente in base ai dati inseriti
+                    </div>
+                    
+                    <table class="score-table">
+                        <thead>
+                            <tr>
+                                <th>Criterio</th>
+                                <th>Descrizione</th>
+                                <th>Max Punti</th>
+                                <th>Punti Ottenuti</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Alta Stagione</strong> (Giu-Set)</td>
-                                <td><input type="number" id="giorniAlta" value="120" min="0" max="365" onchange="updateOccupancy()"></td>
-                                <td><input type="number" id="occAlta" value="85" min="0" max="100" step="1" onchange="updateOccupancy()">%</td>
-                                <td id="camereAlta">0</td>
+                                <td>A</td>
+                                <td>Incremento occupazionale (ULA)</td>
+                                <td>27</td>
+                                <td id="final_a">0</td>
                             </tr>
                             <tr>
-                                <td><strong>Media Stagione</strong> (Apr-Mag, Ott)</td>
-                                <td><input type="number" id="giorniMedia" value="120" min="0" max="365" onchange="updateOccupancy()"></td>
-                                <td><input type="number" id="occMedia" value="60" min="0" max="100" step="1" onchange="updateOccupancy()">%</td>
-                                <td id="camereMedia">0</td>
+                                <td>B</td>
+                                <td>Investimenti operativi/totali</td>
+                                <td>20</td>
+                                <td id="final_b">0</td>
                             </tr>
                             <tr>
-                                <td><strong>Bassa Stagione</strong> (Nov-Mar)</td>
-                                <td><input type="number" id="giorniBassa" value="125" min="0" max="365" onchange="updateOccupancy()"></td>
-                                <td><input type="number" id="occBassa" value="35" min="0" max="100" step="1" onchange="updateOccupancy()">%</td>
-                                <td id="camereBassa">0</td>
+                                <td>C</td>
+                                <td>Indicatori economici (ROS, ROI, EBITDA, TOR)</td>
+                                <td>14</td>
+                                <td id="final_c">0</td>
                             </tr>
-                            <tr style="background: #f0f0f0; font-weight: bold;">
-                                <td>TOTALE</td>
-                                <td id="giorniTotali">365</td>
-                                <td id="occMediaDisplay">-</td>
-                                <td id="camereTotali">0</td>
+                            <tr>
+                                <td>D</td>
+                                <td>Qualità del progetto</td>
+                                <td>14</td>
+                                <td>
+                                    <input type="number" id="griglia_d" value="0" min="0" max="14" onchange="calcolaPunteggio()">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>E</td>
+                                <td>Sostenibilità ambientale</td>
+                                <td>17</td>
+                                <td>
+                                    <input type="number" id="griglia_e" value="0" min="0" max="17" onchange="calcolaPunteggio()">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>F</td>
+                                <td>Localizzazione geografica</td>
+                                <td>8</td>
+                                <td>
+                                    <input type="number" id="griglia_f" value="0" min="0" max="8" onchange="calcolaPunteggio()">
+                                </td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-
-                <button class="btn" onclick="showTab(1)">Continua: Dati Economici →</button>
-            </div>
-
-            <!-- TAB 2: DATI ECONOMICI -->
-            <div class="tab-content">
-                <div class="alert alert-info">
-                    <strong>ℹ️ Dati Finanziari:</strong> Inserisci le proiezioni economiche dell'anno a regime (3° anno operativo completo).
-                </div>
-
-                <div class="section">
-                    <h2>Ricavi Previsionali Anno a Regime</h2>
-                    <div class="input-grid">
-                        <div class="input-group">
-                            <label>Prezzo Medio Camera (ADR) (€) *</label>
-                            <input type="number" id="adr" value="75" min="1" onchange="calcola()">
-                            <span class="hint">Tariffa media per notte</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Fatturato Ristorazione (€)</label>
-                            <input type="number" id="fattRistorazione" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Se presente servizio F&B</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Altri Ricavi (€)</label>
-                            <input type="number" id="altriRicavi" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Spa, wellness, servizi extra</span>
-                        </div>
-                        <div class="input-group" style="background: #e8f4f8; padding: 15px; border-radius: 8px;">
-                            <label style="color: #0c5460;">Fatturato Totale Previsto (€)</label>
-                            <input type="text" id="fatturatoTotale" readonly style="background: white; font-weight: bold; font-size: 18px; color: #0c5460;">
-                        </div>
+                    
+                    <div class="total-score">
+                        Punteggio Totale: <span id="punteggioTotale">0</span> / 100
                     </div>
-                </div>
-
-                <div class="section">
-                    <h2>Costi Operativi Anno a Regime</h2>
-                    <div class="input-grid">
-                        <div class="input-group">
-                            <label>Materie Prime e Sussidiarie (€)</label>
-                            <input type="number" id="costiMaterie" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Alimenti, bevande, prodotti pulizia</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Costo Personale (€) *</label>
-                            <input type="number" id="costoPersonale" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Stipendi, contributi, TFR</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Servizi Generali (€) *</label>
-                            <input type="number" id="costiServizi" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Utenze, manutenzioni, assicurazioni</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Godimento Beni di Terzi (€)</label>
-                            <input type="number" id="costiBeni" value="40000" min="0" onchange="calcola()">
-                            <span class="hint">Affitti, leasing, noleggi</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Costi Vendita e Pubblicità (€)</label>
-                            <input type="number" id="costiMarketing" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Marketing, commissioni OTA</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Spese Generali/Amministrative (€)</label>
-                            <input type="number" id="speseGenerali" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Consulenze, amministrazione</span>
-                        </div>
+                    
+                    <div class="alert alert-warning" style="margin-top: 20px;">
+                        ⚠️ <strong>Nota:</strong> I criteri D, E, F devono essere inseriti manualmente in base alla documentazione del progetto
                     </div>
-                </div>
-
-                <div class="section">
-                    <h2>Ammortamenti e Gestione Finanziaria</h2>
-                    <div class="input-grid">
-                        <div class="input-group">
-                            <label>Ammortamenti Immateriali (€)</label>
-                            <input type="number" id="ammImmateriali" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Software, licenze</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Ammortamenti Materiali (€) *</label>
-                            <input type="number" id="ammMateriali" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Impianti, arredi, immobili</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Oneri Finanziari (€)</label>
-                            <input type="number" id="oneriFin" value="0" min="0" onchange="calcola()">
-                            <span class="hint">Interessi passivi su finanziamenti</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Imposte sul Reddito (€)</label>
-                            <input type="number" id="imposte" value="0" min="0" onchange="calcola()">
-                            <span class="hint">IRES, IRAP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="datiConfronto" style="display: none;">
-                    <div class="section">
-                        <h2>Dati Esercizio Precedente (solo per imprese attive)</h2>
-                        <div class="input-grid">
-                            <div class="input-group">
-                                <label>Fatturato Anno Precedente (€)</label>
-                                <input type="number" id="fattPrecedente" value="0" min="0" onchange="calcola()">
-                            </div>
-                            <div class="input-group">
-                                <label>Risultato Operativo Precedente (€)</label>
-                                <input type="number" id="risOpPrecedente" value="0" onchange="calcola()">
-                            </div>
-                            <div class="input-group">
-                                <label>Capitale Investito Precedente (€)</label>
-                                <input type="number" id="capInvPrecedente" value="0" min="0" onchange="calcola()">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="calcola()">🧮 Calcola Tutti gli Indici</button>
-                <button class="btn" onclick="showTab(2)">Vai ai Risultati →</button>
-            </div>
-
-            <!-- TAB 3: INDICI E RISULTATI -->
-            <div class="tab-content">
-                <button class="btn print-btn" onclick="window.print()">🖨️ Stampa Report</button>
-                <button class="btn" style="float:right; margin-right:10px; background:#0069d9;" onclick="exportPDF()">📄 Esporta PDF</button>
-                <button class="btn" style="float:right; margin-right:10px; background:#0b8457;" onclick="exportExcel()">📊 Esporta Excel</button>
-
-                <div style="clear:both"></div>
-
-                <div class="alert alert-info">
-                    <strong>📊 Dashboard Risultati:</strong> Analisi completa degli indici economici e operativi con confronto benchmark settoriali.
-                </div>
-
-                <div id="reportArea">
-                <div class="section">
-                    <h2>Indici Economico-Finanziari (Richiesti dal Bando)</h2>
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <h3>ROS - Return On Sales</h3>
-                            <div class="result-value" id="rosValue">-</div>
-                            <div class="result-benchmark">Target: >20% (eccellente)</div>
-                            <span class="result-status" id="rosStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>ROI - Return On Investment</h3>
-                            <div class="result-value" id="roiValue">-</div>
-                            <div class="result-benchmark">Target: >15% (eccellente)</div>
-                            <span class="result-status" id="roiStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>EBITDA Margin</h3>
-                            <div class="result-value" id="ebitdaValue">-</div>
-                            <div class="result-benchmark">Target: >30% (eccellente)</div>
-                            <span class="result-status" id="ebitdaStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>Margine Operativo Lordo</h3>
-                            <div class="result-value" id="molValue">-</div>
-                            <div class="result-benchmark">In valore assoluto (€)</div>
-                            <span class="result-status status-good" id="molStatus">-</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>Indici Operativi Turistici</h2>
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <h3>TOR - Occupazione Media</h3>
-                            <div class="result-value" id="torValue">-</div>
-                            <div class="result-benchmark">Target Sicilia: 60-65%</div>
-                            <span class="result-status" id="torStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>RevPAR</h3>
-                            <div class="result-value" id="revparValue">-</div>
-                            <div class="result-benchmark">Ricavo per camera disponibile</div>
-                            <span class="result-status" id="revparStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>ADR - Tariffa Media</h3>
-                            <div class="result-value" id="adrResultValue">-</div>
-                            <div class="result-benchmark">Average Daily Rate effettivo</div>
-                            <span class="result-status status-good">Input utente</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>GOPPAR</h3>
-                            <div class="result-value" id="gopparValue">-</div>
-                            <div class="result-benchmark">GOP per camera disponibile</div>
-                            <span class="result-status" id="gopparStatus">-</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>Efficienza e Produttività</h2>
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <h3>Labor Cost %</h3>
-                            <div class="result-value" id="laborValue">-</div>
-                            <div class="result-benchmark">Target: 35-45%</div>
-                            <span class="result-status" id="laborStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>Produttività Dipendente</h3>
-                            <div class="result-value" id="prodValue">-</div>
-                            <div class="result-benchmark">Fatturato per ULA</div>
-                            <span class="result-status" id="prodStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>Inv/Occupazione</h3>
-                            <div class="result-value" id="invOccValue">-</div>
-                            <div class="result-benchmark">€ investimento per ULA</div>
-                            <span class="result-status" id="invOccStatus">-</span>
-                        </div>
-
-                        <div class="result-card">
-                            <h3>Tasso Saturazione</h3>
-                            <div class="result-value" id="satValue">-</div>
-                            <div class="result-benchmark">= TOR (occupazione)</div>
-                            <span class="result-status" id="satStatus">-</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>Riepilogo Economico</h2>
-                    <table class="occupancy-table">
-                        <tr>
-                            <th>Voce</th>
-                            <th style="text-align: right;">Importo (€)</th>
-                        </tr>
-                        <tr>
-                            <td><strong>Fatturato Totale</strong></td>
-                            <td style="text-align: right;" id="recap_fatt">-</td>
-                        </tr>
-                        <tr>
-                            <td>Costi Operativi</td>
-                            <td style="text-align: right;" id="recap_costi">-</td>
-                        </tr>
-                        <tr style="background: #f0f0f0;">
-                            <td><strong>MOL (Margine Operativo Lordo)</strong></td>
-                            <td style="text-align: right;" id="recap_mol">-</td>
-                        </tr>
-                        <tr>
-                            <td>Ammortamenti</td>
-                            <td style="text-align: right;" id="recap_amm">-</td>
-                        </tr>
-                        <tr style="background: #e8f4f8;">
-                            <td><strong>EBITDA</strong></td>
-                            <td style="text-align: right;" id="recap_ebitda">-</td>
-                        </tr>
-                        <tr style="background: #d4edda;">
-                            <td><strong>Risultato Operativo</strong></td>
-                            <td style="text-align: right;" id="recap_risop">-</td>
-                        </tr>
-                        <tr>
-                            <td>Oneri Finanziari</td>
-                            <td style="text-align: right;" id="recap_fin">-</td>
-                        </tr>
-                        <tr>
-                            <td>Imposte</td>
-                            <td style="text-align: right;" id="recap_imp">-</td>
-                        </tr>
-                        <tr style="background: #cfe2ff; font-weight: bold;">
-                            <td><strong>RISULTATO NETTO</strong></td>
-                            <td style="text-align: right;" id="recap_netto">-</td>
-                        </tr>
-                    </table>
-                </div>
-                </div>
-
-                <div class="legend">
-                    <strong>Legenda Status:</strong>
-                    <div class="legend-item"><span class="legend-color status-excellent"></span> Eccellente</div>
-                    <div class="legend-item"><span class="legend-color status-good"></span> Buono</div>
-                    <div class="legend-item"><span class="legend-color status-warning"></span> Sufficiente</div>
-                    <div class="legend-item"><span class="legend-color status-poor"></span> Migliorabile</div>
                 </div>
             </div>
-
-            <!-- TAB 4: PUNTEGGIO BANDO -->
-            <div class="tab-content">
-                <div class="alert alert-warning">
-                    <strong>⚠️ Attenzione:</strong> Questi punteggi sono calcolati automaticamente in base ai criteri della Griglia di Valutazione del Bando FSC 2021-2027. Verifica sempre con il bando e le asseverazioni.
-                </div>
-
-                <div class="score-card">
-                    <h3>PUNTEGGIO TOTALE GRIGLIA VALUTAZIONE</h3>
-                    <div class="score-value" id="punteggioTotale">0</div>
-                    <div class="score-max">su 100 punti massimi</div>
-                </div>
-
-                <div class="section">
-                    <h2>A) Rapporto Investimento/Occupazione</h2>
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <h3>Investimento per ULA</h3>
-                            <div class="result-value" id="griglia_invula">-</div>
-                            <div class="result-benchmark">Max 20 punti</div>
-                            <span class="result-status status-good" id="griglia_invula_punti">0 punti</span>
-                        </div>
-                    </div>
-
-                    <table class="occupancy-table" style="margin-top: 20px;">
-                        <thead>
-                            <tr>
-                                <th>Criterio</th>
-                                <th>Soglia</th>
-                                <th>Punti</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="griglia_a_dettaglio"></tbody>
-                    </table>
-                </div>
-
-                <div class="section">
-                    <h2>B) Rapporto Investimento Operativo</h2>
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <h3>Rapporto Inv. Operativo</h3>
-                            <div class="result-value" id="griglia_invop">-</div>
-                            <div class="result-benchmark">Max 20 punti</div>
-                            <span class="result-status status-good" id="griglia_invop_punti">0 punti</span>
-                        </div>
-                    </div>
-
-                    <table class="occupancy-table" style="margin-top: 20px;">
-                        <thead>
-                            <tr><th>Rapporto</th><th>Punti</th><th>Status</th></tr>
-                        </thead>
-                        <tbody id="griglia_b_dettaglio"></tbody>
-                    </table>
-                </div>
-
-                <div class="section">
-                    <h2>C) Risultati Economici Attesi</h2>
-                    <div class="results-grid">
-                        <div class="result-card"><h3>ROS</h3><div class="result-value" id="griglia_ros">-</div><span class="result-status status-good" id="griglia_ros_punti">0 punti</span></div>
-                        <div class="result-card"><h3>ROI</h3><div class="result-value" id="griglia_roi">-</div><span class="result-status status-good" id="griglia_roi_punti">0 punti</span></div>
-                        <div class="result-card"><h3>EBITDA Margin</h3><div class="result-value" id="griglia_ebitda">-</div><span class="result-status status-good" id="griglia_ebitda_punti">0 punti</span></div>
-                        <div class="result-card"><h3>Tasso Saturazione</h3><div class="result-value" id="griglia_sat">-</div><span class="result-status status-good" id="griglia_sat_punti">0 punti</span></div>
-                    </div>
-
-                    <div style="text-align: center; margin: 20px 0; padding: 20px; background: #f0f0f0; border-radius: 10px;">
-                        <h3 style="margin-bottom: 10px;">Subtotale Risultati Economici</h3>
-                        <div style="font-size: 36px; font-weight: bold; color: #667eea;" id="griglia_c_tot">0 punti</div>
-                        <div style="color: #666;">Max 14 punti</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>D) Qualità Progettuale</h2>
-                    <div class="alert alert-info"><strong>ℹ️ Nota:</strong> I punteggi D), E) ed F) dipendono dalle caratteristiche specifiche del progetto (recupero urbano, efficientamento energetico, localizzazione).</div>
-
-                    <div class="input-grid">
-                        <div class="input-group">
-                            <label>D) Qualità Progettuale (0-14 punti)</label>
-                            <input type="number" id="griglia_d" value="0" min="0" max="14" step="1">
-                            <span class="hint">Recupero urbano, immobili storici</span>
-                        </div>
-
-                        <div class="input-group">
-                            <label>E) Sostenibilità Ambientale (0-17 punti)</label>
-                            <input type="number" id="griglia_e" value="0" min="0" max="17" step="1">
-                            <span class="hint">Efficientamento energetico (cumulabile)</span>
-                        </div>
-
-                        <div class="input-group">
-                            <label>F) Localizzazione (0-10 punti)</label>
-                            <input type="number" id="griglia_f" value="0" min="0" max="10" step="1">
-                            <span class="hint">Aree rurali, isole minori, marginalità. Se è stato caricato il CSV e selezionato il comune, il valore verrà sovrascritto automaticamente.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="calcolaPunteggio()">🎯 Ricalcola Punteggio Totale</button>
-
-                <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-top: 30px;">
-                    <h2 style="color: white;">📋 Riepilogo Finale Punteggi</h2>
-                    <table class="occupancy-table">
-                        <thead>
-                            <tr>
-                                <th style="background: rgba(255,255,255,0.2);">Criterio</th>
-                                <th style="background: rgba(255,255,255,0.2); text-align: center;">Punti Ottenuti</th>
-                                <th style="background: rgba(255,255,255,0.2); text-align: center;">Punti Max</th>
-                            </tr>
-                        </thead>
-                        <tbody style="background: white; color: #333;">
-                            <tr><td>A) Investimento/Occupazione</td><td style="text-align:center;font-weight:bold;" id="final_a">0</td><td style="text-align:center;">20</td></tr>
-                            <tr><td>B) Investimento Operativo</td><td style="text-align:center;font-weight:bold;" id="final_b">0</td><td style="text-align:center;">20</td></tr>
-                            <tr><td>C) Risultati Economici</td><td style="text-align:center;font-weight:bold;" id="final_c">0</td><td style="text-align:center;">14</td></tr>
-                            <tr><td>D) Qualità Progettuale</td><td style="text-align:center;font-weight:bold;" id="final_d">0</td><td style="text-align:center;">14</td></tr>
-                            <tr><td>E) Sostenibilità Ambientale</td><td style="text-align:center;font-weight:bold;" id="final_e">0</td><td style="text-align:center;">17</td></tr>
-                            <tr><td>F) Localizzazione</td><td style="text-align:center;font-weight:bold;" id="final_f">0</td><td style="text-align:center;">10</td></tr>
-                            <tr style="background: #ffd700; font-weight: bold; font-size: 18px;"><td><strong>TOTALE COMPLESSIVO</strong></td><td style="text-align:center;" id="final_tot">0</td><td style="text-align:center;">100</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </div>
     </div>
-
-    <!-- Librerie per export PDF/Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
         // Variabili globali
         let risultati = {};
-        let comuniLocalizzazione = {}; // popolato dal CSV
+        const mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 
+                      'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+        const giorniPerMese = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+        // Occupancy default per tipo di struttura
+        const occupancyDefaults = {
+            hotel: [40, 45, 50, 55, 60, 70, 80, 85, 75, 60, 50, 45],
+            bb: [30, 35, 40, 50, 60, 75, 85, 90, 70, 55, 40, 35],
+            agriturismo: [20, 25, 35, 45, 55, 65, 75, 80, 60, 45, 30, 25],
+            default: [35, 40, 45, 50, 60, 70, 80, 85, 70, 55, 45, 40]
+        };
 
-        // UI: show tab
+        // Funzione per cambiare tab
         function showTab(index) {
             const tabs = document.querySelectorAll('.tab');
             const contents = document.querySelectorAll('.tab-content');
+            
             tabs.forEach((tab, i) => {
-                if (i === index) { tab.classList.add('active'); contents[i].classList.add('active'); }
-                else { tab.classList.remove('active'); contents[i].classList.remove('active'); }
+                tab.classList.toggle('active', i === index);
             });
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            
+            contents.forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
         }
 
+        // Aggiorna visibilità form per imprese attive
         function updateFormVisibility() {
             const stato = document.getElementById('impresaStato').value;
-            const datiConfronto = document.getElementById('datiConfronto');
-            datiConfronto.style.display = (stato === 'attiva') ? 'block' : 'none';
-        }
-
-        // CSV upload handling (semicolon-separated)
-        function handleCSVUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const text = evt.target.result;
-                parseComuniCSV(text);
-            };
-            // il csv allegato potrebbe essere ISO-8859-1; FileReader uscirà bene nella maggior parte dei casi
-            reader.readAsText(file, 'ISO-8859-1');
-        }
-
-        function parseComuniCSV(text) {
-            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-            if (lines.length === 0) { alert('CSV vuoto'); return; }
-            const headers = lines[0].split(';').map(h => h.trim());
-            const idxComune = headers.findIndex(h => /COMUNE/i.test(h));
-            const idxIsola = headers.findIndex(h => /Isola/i.test(h));
-            const idxRic = headers.findIndex(h => /Ricettiv/i.test(h));
-            const idxRur = headers.findIndex(h => /Area rurale/i.test(h) || /Rurale/i.test(h));
-            if (idxComune === -1) { alert('Header COMUNE non trovato nel CSV'); return; }
-
-            let added = 0;
-            for (let i = 1; i < lines.length; i++) {
-                const cols = lines[i].split(';').map(c => c.trim());
-                const nome = cols[idxComune];
-                if (!nome) continue;
-                comuniLocalizzazione[nome.toUpperCase()] = {
-                    isIsolaMinore: idxIsola >= 0 ? Number((cols[idxIsola] || '0').replace(/\D/g,'')) === 1 : false,
-                    isRicettivita: idxRic >= 0 ? Number((cols[idxRic] || '0').replace(/\D/g,'')) === 1 : false,
-                    isAreaRurale: idxRur >= 0 ? Number((cols[idxRur] || '0').replace(/\D/g,'')) === 1 : false
-                };
-                added++;
-            }
-            populateComuniDatalist();
-            alert('Caricati ' + added + ' comuni dal CSV. Ora puoi selezionare il comune per il criterio F.');
-        }
-
-        function populateComuniDatalist() {
-            const dl = document.getElementById('comuniList');
-            dl.innerHTML = '';
-            Object.keys(comuniLocalizzazione).sort().forEach(nome => {
-                const opt = document.createElement('option');
-                opt.value = nome;
-                dl.appendChild(opt);
-            });
-        }
-
-        function comuneChanged() {
-            const nome = (document.getElementById('comuneInput').value || '').toUpperCase();
-            if (comuniLocalizzazione[nome]) {
-                const v = comuniLocalizzazione[nome];
-                const sum = (v.isIsolaMinore?1:0) + (v.isRicettivita?1:0) + (v.isAreaRurale?1:0);
-                const punti = sum >= 2 ? 8 : (sum === 1 ? 4 : 0);
-                document.getElementById('griglia_f').value = punti;
+            const datiPrecedenti = document.getElementById('datiPrecedenti');
+            if (datiPrecedenti) {
+                datiPrecedenti.style.display = stato === 'attiva' ? 'block' : 'none';
             }
         }
 
-        // Occupancy update
+        // Genera tabella occupancy
         function updateOccupancy() {
-            const numeroCamere = Number(document.getElementById('numeroCamere').value) || 0;
-            const gA = Number(document.getElementById('giorniAlta').value) || 0;
-            const gM = Number(document.getElementById('giorniMedia').value) || 0;
-            const gB = Number(document.getElementById('giorniBassa').value) || 0;
-            const oA = Number(document.getElementById('occAlta').value) || 0;
-            const oM = Number(document.getElementById('occMedia').value) || 0;
-            const oB = Number(document.getElementById('occBassa').value) || 0;
-
-            const camAlta = Math.round(numeroCamere * gA * (oA / 100));
-            const camMedia = Math.round(numeroCamere * gM * (oM / 100));
-            const camBassa = Math.round(numeroCamere * gB * (oB / 100));
-            const giorniTot = gA + gM + gB;
-            const camereTot = camAlta + camMedia + camBassa;
-            const occMedia = (numeroCamere * giorniTot) > 0 ? (camereTot / (numeroCamere * giorniTot) * 100) : 0;
-
-            document.getElementById('camereAlta').innerText = camAlta.toLocaleString();
-            document.getElementById('camereMedia').innerText = camMedia.toLocaleString();
-            document.getElementById('camereBassa').innerText = camBassa.toLocaleString();
-            document.getElementById('giorniTotali').innerText = giorniTot;
-            document.getElementById('camereTotali').innerText = camereTot.toLocaleString();
-            document.getElementById('occMediaDisplay').innerText = occMedia.toFixed(1) + '%';
-        }
-
-        // VALIDAZIONE
-        function validateInputs(showAlert=false) {
-            const required = [
-                {id:'numeroCamere', label:'Numero Camere', min:1},
-                {id:'giorniApertura', label:'Giorni Apertura', min:1},
-                {id:'dipendentiPrevisti', label:'Numero Dipendenti Previsti', min:0.5},
-                {id:'investimentoTotale', label:'Investimento Totale', min:50000},
-                {id:'adr', label:'ADR', min:1}
-            ];
-            let errors = [];
-            document.querySelectorAll('.invalid-input').forEach(el => el.classList.remove('invalid-input'));
-
-            required.forEach(r => {
-                const el = document.getElementById(r.id);
-                if (!el) return;
-                const val = Number(el.value);
-                if (isNaN(val) || val < r.min) {
-                    errors.push(r.label + ' (campo obbligatorio; valore minimo ' + r.min + ')');
-                    el.classList.add('invalid-input');
-                }
+            const tipo = document.getElementById('tipologiaStruttura').value;
+            const defaults = occupancyDefaults[tipo] || occupancyDefaults.default;
+            const tbody = document.getElementById('occupancyTable');
+            const camere = parseInt(document.getElementById('numeroCamere').value) || 10;
+            
+            tbody.innerHTML = '';
+            
+            mesi.forEach((mese, i) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${mese}</td>
+                    <td><input type="number" id="occ_${i}" value="${defaults[i]}" min="0" max="100" onchange="updateCamereOccupate(${i})"></td>
+                    <td id="camere_${i}">${Math.round(camere * defaults[i] / 100)}</td>
+                    <td>${giorniPerMese[i]}</td>
+                `;
             });
-
-            const invTot = Number(document.getElementById('investimentoTotale').value) || 0;
-            const invOp = Number(document.getElementById('investimentiOperativi').value) || 0;
-            if (invOp > invTot) {
-                errors.push('Investimenti Operativi non può essere maggiore dell\'Investimento Totale');
-                document.getElementById('investimentiOperativi').classList.add('invalid-input');
-                document.getElementById('investimentoTotale').classList.add('invalid-input');
-            }
-
-            const gA = Number(document.getElementById('giorniAlta').value) || 0;
-            const gM = Number(document.getElementById('giorniMedia').value) || 0;
-            const gB = Number(document.getElementById('giorniBassa').value) || 0;
-            if ((gA+gM+gB) <= 0) {
-                errors.push('I giorni totali per i periodi stagionali devono essere > 0');
-                document.getElementById('giorniAlta').classList.add('invalid-input');
-                document.getElementById('giorniMedia').classList.add('invalid-input');
-                document.getElementById('giorniBassa').classList.add('invalid-input');
-            }
-
-            const validationDiv = document.getElementById('validationErrors');
-            if (errors.length > 0) {
-                validationDiv.style.display = 'block';
-                validationDiv.innerHTML = '<strong>Errore di validazione:</strong><ul><li>' + errors.join('</li><li>') + '</li></ul>';
-                if (showAlert) validationDiv.scrollIntoView({behavior:'smooth'});
-                return false;
-            } else {
-                validationDiv.style.display = 'none';
-                validationDiv.innerHTML = '';
-                return true;
-            }
         }
 
-        // CALCOLI INDICI
-        function calcola() {
-            if (!validateInputs()) return;
+        // Aggiorna camere occupate quando cambia l'occupancy
+        function updateCamereOccupate(mese) {
+            const camere = parseInt(document.getElementById('numeroCamere').value) || 10;
+            const occ = parseFloat(document.getElementById(`occ_${mese}`).value) || 0;
+            document.getElementById(`camere_${mese}`).textContent = Math.round(camere * occ / 100);
+        }
 
+        // Reset occupancy ai valori default
+        function resetOccupancy() {
             updateOccupancy();
-
-            const numeroCamere = Number(document.getElementById('numeroCamere').value) || 0;
-            const giorniTot = Number(document.getElementById('giorniApertura').value) || 0;
-            const gA = Number(document.getElementById('giorniAlta').value) || 0;
-            const gM = Number(document.getElementById('giorniMedia').value) || 0;
-            const gB = Number(document.getElementById('giorniBassa').value) || 0;
-            const giorniCalcolati = (gA + gM + gB) || giorniTot;
-
-            const occA = Number(document.getElementById('occAlta').value) || 0;
-            const occM = Number(document.getElementById('occMedia').value) || 0;
-            const occB = Number(document.getElementById('occBassa').value) || 0;
-
-            const adr = Number(document.getElementById('adr').value) || 0;
-            const fattRistorazione = Number(document.getElementById('fattRistorazione').value) || 0;
-            const altriRicavi = Number(document.getElementById('altriRicavi').value) || 0;
-
-            const costiMaterie = Number(document.getElementById('costiMaterie').value) || 0;
-            const costoPersonale = Number(document.getElementById('costoPersonale').value) || 0;
-            const costiServizi = Number(document.getElementById('costiServizi').value) || 0;
-            const costiBeni = Number(document.getElementById('costiBeni').value) || 0;
-            const costiMarketing = Number(document.getElementById('costiMarketing').value) || 0;
-            const speseGenerali = Number(document.getElementById('speseGenerali').value) || 0;
-
-            const ammImmateriali = Number(document.getElementById('ammImmateriali').value) || 0;
-            const ammMateriali = Number(document.getElementById('ammMateriali').value) || 0;
-            const oneriFin = Number(document.getElementById('oneriFin').value) || 0;
-            const imposte = Number(document.getElementById('imposte').value) || 0;
-
-            const investimentoTotale = Number(document.getElementById('investimentoTotale').value) || 0;
-            const investimentiOperativi = Number(document.getElementById('investimentiOperativi').value) || 0;
-
-            const dipAttuali = Number(document.getElementById('dipendentiAttuali').value) || 0;
-            const dipPrevisti = Number(document.getElementById('dipendentiPrevisti').value) || 0;
-
-            const camAlta = numeroCamere * gA * (occA / 100);
-            const camMedia = numeroCamere * gM * (occM / 100);
-            const camBassa = numeroCamere * gB * (occB / 100);
-            const camereTotali = camAlta + camMedia + camBassa;
-
-            const ricaviCamere = adr * camereTotali;
-            const fatturatoTotale = ricaviCamere + fattRistorazione + altriRicavi;
-
-            const costiOperativi = costiMaterie + costoPersonale + costiServizi + costiBeni + costiMarketing + speseGenerali;
-
-            const mol = fatturatoTotale - costiOperativi;
-            const ammortamenti = ammImmateriali + ammMateriali;
-            const ebitda = mol - ammortamenti;
-            const risultatoOperativo = ebitda;
-            const risultatoNetto = risultatoOperativo - oneriFin - imposte;
-
-            const ros = fatturatoTotale !== 0 ? (risultatoOperativo / fatturatoTotale) : 0;
-            const roi = investimentoTotale !== 0 ? (risultatoOperativo / investimentoTotale) : 0;
-            const ebitdaMargin = fatturatoTotale !== 0 ? (ebitda / fatturatoTotale) : 0;
-            const tor = (numeroCamere * giorniCalcolati) !== 0 ? (camereTotali / (numeroCamere * giorniCalcolati)) : 0;
-            const revpar = (numeroCamere * giorniCalcolati) !== 0 ? (ricaviCamere / (numeroCamere * giorniCalcolati)) : 0;
-            const goppar = (numeroCamere * giorniCalcolati) !== 0 ? (risultatoOperativo / (numeroCamere * giorniCalcolati)) : 0;
-            const laborCostPerc = fatturatoTotale !== 0 ? (costoPersonale / fatturatoTotale) : 0;
-            const produttivitaPerULA = dipPrevisti !== 0 ? (fatturatoTotale / dipPrevisti) : 0;
-            const invPerULA = (dipPrevisti - dipAttuali) > 0 ? (investimentoTotale / (dipPrevisti - dipAttuali)) : (dipPrevisti > 0 ? (investimentoTotale / dipPrevisti) : Infinity);
-
-            risultati = {
-                numeroCamere, giorniCalcolati, camereTotali, ricaviCamere, fatturatoTotale,
-                costiOperativi, mol, ammortamenti, ebitda, risultatoOperativo, risultatoNetto,
-                ros, roi, ebitdaMargin, tor, revpar, goppar, laborCostPerc, produttivitaPerULA, invPerULA,
-                investimentoTotale, investimentiOperativi, dipAttuali, dipPrevisti
-            };
-
-            // Aggiornamento UI
-            document.getElementById('fatturatoTotale').value = formatEuro(fatturatoTotale);
-            document.getElementById('rosValue').innerText = formatPerc(ros);
-            document.getElementById('roiValue').innerText = formatPerc(roi);
-            document.getElementById('ebitdaValue').innerText = formatPerc(ebitdaMargin);
-            document.getElementById('molValue').innerText = formatEuro(mol);
-
-            document.getElementById('torValue').innerText = (tor*100).toFixed(1) + "%";
-            document.getElementById('revparValue').innerText = formatEuro(revpar);
-            document.getElementById('adrResultValue').innerText = formatEuro(adr);
-            document.getElementById('gopparValue').innerText = formatEuro(goppar);
-
-            document.getElementById('laborValue').innerText = formatPerc(laborCostPerc);
-            document.getElementById('prodValue').innerText = formatEuro(produttivitaPerULA);
-            document.getElementById('invOccValue').innerText = Number.isFinite(invPerULA) ? formatEuro(invPerULA) : '-';
-            document.getElementById('satValue').innerText = (tor*100).toFixed(1) + "%";
-
-            document.getElementById('recap_fatt').innerText = formatEuro(fatturatoTotale);
-            document.getElementById('recap_costi').innerText = formatEuro(costiOperativi);
-            document.getElementById('recap_mol').innerText = formatEuro(mol);
-            document.getElementById('recap_amm').innerText = formatEuro(ammortamenti);
-            document.getElementById('recap_ebitda').innerText = formatEuro(ebitda);
-            document.getElementById('recap_risop').innerText = formatEuro(risultatoOperativo);
-            document.getElementById('recap_fin').innerText = formatEuro(oneriFin);
-            document.getElementById('recap_imp').innerText = formatEuro(imposte);
-            document.getElementById('recap_netto').innerText = formatEuro(risultatoNetto);
-
-            // Status badges (soglie esemplificative; adattare se necessario)
-            setStatus('rosStatus', ros, [0.05, 0.1, 0.2]);
-            setStatus('roiStatus', roi, [0.05, 0.1, 0.15]);
-            setStatus('ebitdaStatus', ebitdaMargin, [0.1, 0.2, 0.3]);
-            setStatus('torStatus', tor, [0.4, 0.6, 0.7]);
-            setStatus('revparStatus', revpar, [30, 60, 100]);
-            setStatus('gopparStatus', goppar, [10, 20, 40]);
-            setStatus('laborStatus', laborCostPerc, [0.35, 0.45, 0.6], true);
-
-            document.getElementById('griglia_ros').innerText = formatPerc(ros);
-            document.getElementById('griglia_roi').innerText = formatPerc(roi);
-            document.getElementById('griglia_ebitda').innerText = formatPerc(ebitdaMargin);
-            document.getElementById('griglia_sat').innerText = (tor*100).toFixed(1) + "%";
-
-            const ratioInvOp = investimentoTotale > 0 ? (investimentiOperativi / investimentoTotale) : 0;
-            document.getElementById('griglia_invop').innerText = (ratioInvOp*100).toFixed(1) + "%";
-            document.getElementById('griglia_invula').innerText = Number.isFinite(invPerULA) ? formatEuro(invPerULA) : '-';
         }
 
-        // Helper formatting
-        function formatEuro(val) {
-            if (typeof val !== 'number' || !Number.isFinite(val)) return '-';
-            return val.toLocaleString('it-IT', {style:'currency', currency:'EUR', minimumFractionDigits:0});
-        }
-        function formatPerc(val) {
-            if (typeof val !== 'number' || !Number.isFinite(val)) return '-';
-            return (val*100).toFixed(1) + '%';
-        }
-
-        // setStatus: invert=true -> minore è meglio (es. labor cost)
-        function setStatus(elementId, valore, soglie=[0.1,0.2,0.3], invert=false) {
-            const el = document.getElementById(elementId);
-            if (!el) return;
-            if (valore === null || valore === undefined || !Number.isFinite(valore)) {
-                el.className = 'result-status';
-                el.innerText = '-';
-                return;
-            }
-            let classe='status-poor', testo='Migliorabile';
-            if (!invert) {
-                if (valore >= soglie[2]) { classe='status-excellent'; testo='Eccellente'; }
-                else if (valore >= soglie[1]) { classe='status-good'; testo='Buono'; }
-                else if (valore >= soglie[0]) { classe='status-warning'; testo='Sufficiente'; }
-            } else {
-                if (valore <= soglie[0]) { classe='status-excellent'; testo='Eccellente'; }
-                else if (valore <= soglie[1]) { classe='status-good'; testo='Buono'; }
-                else if (valore <= soglie[2]) { classe='status-warning'; testo='Sufficiente'; }
-            }
-            el.className = 'result-status ' + classe;
-            el.innerText = testo;
-        }
-
-        // Calcolo dei punteggi A-F
-        function calcolaPunteggio() {
-            if (!validateInputs()) return;
-            if (!risultati || !('fatturatoTotale' in risultati)) calcola();
-
-            const stato = document.getElementById('impresaStato').value;
-            const dipAttuali = Number(document.getElementById('dipendentiAttuali').value) || 0;
-            const dipPrevisti = Number(document.getElementById('dipendentiPrevisti').value) || 0;
-            const nuoviOccupati = Math.max(0, dipPrevisti - dipAttuali);
-
-            const invPerULA = risultati.invPerULA;
-
-            // A) Investimento/Occupazione (max 20)
-            let puntiA = 0;
-            if (nuoviOccupati <= 0) puntiA = 0;
-            else {
-                if (stato === 'inattiva') {
-                    if (invPerULA <= 150000) puntiA = 20;
-                    else if (invPerULA <= 200000) puntiA = 16;
-                    else if (invPerULA <= 300000) puntiA = 10;
-                    else puntiA = 6;
-                } else {
-                    if (invPerULA <= 350000) puntiA = 20;
-                    else if (invPerULA <= 466666) puntiA = 16;
-                    else if (invPerULA <= 700000) puntiA = 10;
-                    else puntiA = 6;
+        // Calcolo principale
+        function calcola() {
+            // Raccolta dati
+            const numeroCamere = parseInt(document.getElementById('numeroCamere').value) || 0;
+            const giorniApertura = parseInt(document.getElementById('giorniApertura').value) || 365;
+            const adr = parseFloat(document.getElementById('adr').value) || 0;
+            const fattRistorazione = parseFloat(document.getElementById('fattRistorazione').value) || 0;
+            const altriRicavi = parseFloat(document.getElementById('altriRicavi').value) || 0;
+            
+            const costoPersonale = parseFloat(document.getElementById('costoPersonale').value) || 0;
+            const costiMaterie = parseFloat(document.getElementById('costiMaterie').value) || 0;
+            const costiServizi = parseFloat(document.getElementById('costiServizi').value) || 0;
+            const altriCosti = parseFloat(document.getElementById('altriCosti').value) || 0;
+            
+            const investimentoTotale = parseFloat(document.getElementById('investimentoTotale').value) || 0;
+            const investimentiOperativi = parseFloat(document.getElementById('investimentiOperativi').value) || 0;
+            const anniAmmortamento = parseInt(document.getElementById('anniAmmortamento').value) || 10;
+            const aliquotaFiscale = parseFloat(document.getElementById('aliquotaFiscale').value) || 24;
+            
+            const dipAttuali = parseFloat(document.getElementById('dipendentiAttuali').value) || 0;
+            const dipPrevisti = parseFloat(document.getElementById('dipendentiPrevisti').value) || 0;
+            
+            // Calcolo ricavi da camere
+            let roomNights = 0;
+            let occupancyTotale = 0;
+            let giorniCalcolati = 0;
+            
+            for (let i = 0; i < 12; i++) {
+                const occ = parseFloat(document.getElementById(`occ_${i}`).value) || 0;
+                const giorni = Math.min(giorniPerMese[i], giorniApertura - giorniCalcolati);
+                if (giorni > 0) {
+                    roomNights += numeroCamere * (occ / 100) * giorni;
+                    occupancyTotale += occ;
+                    giorniCalcolati += giorni;
                 }
+                if (giorniCalcolati >= giorniApertura) break;
             }
+            
+            const ricaviCamere = roomNights * adr;
+            const fatturatoTotale = ricaviCamere + fattRistorazione + altriRicavi;
+            
+            // Calcolo costi
+            const costiOperativi = costoPersonale + costiMaterie + costiServizi + altriCosti;
+            
+            // Calcolo risultati
+            const mol = fatturatoTotale - costiOperativi;
+            const ebitda = mol; // Semplificato
+            const ammortamenti = investimentoTotale / anniAmmortamento;
+            const risultatoLordo = ebitda - ammortamenti;
+            const imposte = Math.max(0, risultatoLordo * (aliquotaFiscale / 100));
+            const risultatoNetto = risultatoLordo - imposte;
+            
+            // Calcolo KPI
+            const ros = fatturatoTotale > 0 ? (risultatoLordo / fatturatoTotale) : 0;
+            const roi = investimentoTotale > 0 ? (risultatoLordo / investimentoTotale) : 0;
+            const ebitdaMargin = fatturatoTotale > 0 ? (ebitda / fatturatoTotale) : 0;
+            const tor = occupancyTotale / 12; // Media occupancy
+            const revpar = (giorniCalcolati * numeroCamere) > 0 ? 
+                         (ricaviCamere / (giorniCalcolati * numeroCamere)) : 0;
+            const goppar = (giorniCalcolati * numeroCamere) > 0 ? 
+                          (mol / (giorniCalcolati * numeroCamere)) : 0;
+            const laborCostPerc = fatturatoTotale > 0 ? (costoPersonale / fatturatoTotale) : 0;
+            const produttivitaPerULA = dipPrevisti > 0 ? (fatturatoTotale / dipPrevisti) : 0;
+            const invPerULA = dipPrevisti > 0 ? (investimentoTotale / dipPrevisti) : 0;
+            
+            // Salva risultati
+            risultati = {
+                numeroCamere,
+                giorniCalcolati,
+                fatturatoTotale,
+                costiOperativi,
+                mol,
+                ebitda,
+                ammortamenti,
+                risultatoNetto,
+                ros,
+                roi,
+                ebitdaMargin,
+                tor,
+                revpar,
+                goppar,
+                laborCostPerc,
+                produttivitaPerULA,
+                invPerULA,
+                investimentoTotale,
+                investimentiOperativi,
+                dipAttuali,
+                dipPrevisti
+            };
+            
+            // Mostra risultati
+            mostraRisultati();
+            calcolaPunteggio();
+        }
 
-            const aDettaglio = document.getElementById('griglia_a_dettaglio');
-            aDettaglio.innerHTML = '';
-            aDettaglio.innerHTML += `
-                <tr><td>Nuovi Occupati (ULA)</td><td>${nuoviOccupati}</td><td>${puntiA} punti</td></tr>
-                <tr><td>Investimento per ULA</td><td>${Number.isFinite(invPerULA) ? invPerULA.toLocaleString('it-IT', {style:'currency', currency:'EUR', minimumFractionDigits:0}) : '-'}</td><td>${puntiA}</td></tr>
-            `;
-            document.getElementById('griglia_invula_punti').innerText = puntiA + ' punti';
-            document.getElementById('griglia_invula').innerText = Number.isFinite(invPerULA) ? formatEuro(invPerULA) : '-';
-            document.getElementById('final_a').innerText = puntiA;
+        // Mostra risultati calcolati
+        function mostraRisultati() {
+            document.getElementById('noResultsAlert').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            // Aggiorna valori
+            document.getElementById('resFatturato').textContent = '€ ' + formatNumber(risultati.fatturatoTotale);
+            document.getElementById('resCosti').textContent = '€ ' + formatNumber(risultati.costiOperativi);
+            document.getElementById('resEbitda').textContent = '€ ' + formatNumber(risultati.ebitda);
+            document.getElementById('resNetto').textContent = '€ ' + formatNumber(risultati.risultatoNetto);
+            
+            document.getElementById('resRos').textContent = (risultati.ros * 100).toFixed(1) + '%';
+            document.getElementById('resRoi').textContent = (risultati.roi * 100).toFixed(1) + '%';
+            document.getElementById('resEbitdaMargin').textContent = (risultati.ebitdaMargin * 100).toFixed(1) + '%';
+            document.getElementById('resRevpar').textContent = '€ ' + formatNumber(risultati.revpar);
+            
+            document.getElementById('resTor').textContent = risultati.tor.toFixed(1) + '%';
+            document.getElementById('resGoppar').textContent = '€ ' + formatNumber(risultati.goppar);
+            document.getElementById('resLaborCost').textContent = (risultati.laborCostPerc * 100).toFixed(1) + '%';
+            document.getElementById('resProduttivita').textContent = '€ ' + formatNumber(risultati.produttivitaPerULA);
+            
+            // Aggiorna status
+            updateStatus('statusRos', risultati.ros, [0.15, 0.10, 0.05]);
+            updateStatus('statusRoi', risultati.roi, [0.20, 0.15, 0.10]);
+            updateStatus('statusEbitdaMargin', risultati.ebitdaMargin, [0.30, 0.20, 0.10]);
+            updateStatus('statusRevpar', risultati.revpar, [100, 70, 50]);
+        }
 
-            // B) Rapporto Investimento Operativo (max 20)
-            const ratioInvOp = risultati.investimentiOperativi > 0 && risultati.investimentoTotale > 0 ? (risultati.investimentiOperativi / risultati.investimentoTotale) : 0;
+        // Aggiorna indicatore di status
+        function updateStatus(elementId, value, thresholds) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            if (value >= thresholds[0]) {
+                element.className = 'result-status status-excellent';
+                element.textContent = 'Eccellente';
+            } else if (value >= thresholds[1]) {
+                element.className = 'result-status status-good';
+                element.textContent = 'Buono';
+            } else if (value >= thresholds[2]) {
+                element.className = 'result-status status-warning';
+                element.textContent = 'Sufficiente';
+            } else {
+                element.className = 'result-status status-poor';
+                element.textContent = 'Da migliorare';
+            }
+        }
+
+        // Calcola punteggio bando
+        function calcolaPunteggio() {
+            if (!risultati.fatturatoTotale) return;
+            
+            const stato = document.getElementById('impresaStato').value;
+            
+            // Criterio A - Incremento occupazionale
+            const incrementoULA = risultati.dipPrevisti - risultati.dipAttuali;
+            let puntiA = 0;
+            if (incrementoULA >= 10) puntiA = 27;
+            else if (incrementoULA >= 7) puntiA = 24;
+            else if (incrementoULA >= 5) puntiA = 20;
+            else if (incrementoULA >= 3) puntiA = 16;
+            else if (incrementoULA >= 1) puntiA = 10;
+            else if (incrementoULA >= 0.5) puntiA = 5;
+            
+            // Criterio B - Investimenti operativi
+            const ratioInvOp = risultati.investimentoTotale > 0 ? 
+                              (risultati.investimentiOperativi / risultati.investimentoTotale) : 0;
             let puntiB = 0;
             if (ratioInvOp > 0.85) puntiB = 20;
-            else if (ratioInvOp > 0.7) puntiB = 16;
+            else if (ratioInvOp > 0.70) puntiB = 16;
             else if (ratioInvOp > 0.55) puntiB = 10;
-            else if (ratioInvOp > 0.4) puntiB = 7;
-            else puntiB = 0;
-
-            const bDettaglio = document.getElementById('griglia_b_dettaglio');
-            bDettaglio.innerHTML = '';
-            bDettaglio.innerHTML += `<tr><td>${(ratioInvOp*100).toFixed(1)}%</td><td>${puntiB} punti</td><td>${puntiB>0?'OK':'No'}</td></tr>`;
-            document.getElementById('griglia_invop_punti').innerText = puntiB + ' punti';
-            document.getElementById('final_b').innerText = puntiB;
-            document.getElementById('griglia_invop').innerText = (ratioInvOp*100).toFixed(1) + '%';
-
-            // C) Risultati Economici Attesi (max 14)
-            let puntiC1=0, puntiC2=0, puntiC3=0, puntiC4=0;
-            const ros = risultati.ros;
-            const roi = risultati.roi;
-            const ebitdaMargin = risultati.ebitdaMargin;
-            const tor = risultati.tor;
-
+            else if (ratioInvOp > 0.40) puntiB = 7;
+            
+            // Criterio C - Indicatori economici
+            let puntiC = 0;
             if (stato === 'inattiva') {
-                if (ros > 0.20) puntiC1 = 4;
-                if (roi > 0.15) puntiC2 = 4;
-                if (ebitdaMargin > 0.30) puntiC3 = 4;
+                if (risultati.ros > 0.20) puntiC += 4;
+                if (risultati.roi > 0.15) puntiC += 4;
+                if (risultati.ebitdaMargin > 0.30) puntiC += 4;
             } else {
-                const fattPre = Number(document.getElementById('fattPrecedente').value) || 0;
-                const risOpPre = Number(document.getElementById('risOpPrecedente').value) || 0;
-                const rosPre = (fattPre>0) ? (risOpPre / fattPre) : 0;
-                if ((ros - rosPre) > 0.10) puntiC1 = 4;
-
-                const capInvPre = Number(document.getElementById('capInvPrecedente').value) || 0;
-                const roiPre = (capInvPre>0) ? (risOpPre / capInvPre) : 0;
-                if ((roi - roiPre) > 0.10) puntiC2 = 4;
-
-                if (ebitdaMargin > 0.20) puntiC3 = 4;
+                // Per imprese attive, servirebbero i dati precedenti per confronto
+                if (risultati.ros > 0.15) puntiC += 4;
+                if (risultati.roi > 0.10) puntiC += 4;
+                if (risultati.ebitdaMargin > 0.20) puntiC += 4;
             }
-            if ((tor*100) > 70) puntiC4 = 2;
-
-            let puntiC = puntiC1 + puntiC2 + puntiC3 + puntiC4;
+            if (risultati.tor > 70) puntiC += 2;
             if (puntiC > 14) puntiC = 14;
-            document.getElementById('griglia_ros_punti').innerText = puntiC1 + ' punti';
-            document.getElementById('griglia_roi_punti').innerText = puntiC2 + ' punti';
-            document.getElementById('griglia_ebitda_punti').innerText = puntiC3 + ' punti';
-            document.getElementById('griglia_sat_punti').innerText = puntiC4 + ' punti';
-            document.getElementById('griglia_c_tot').innerText = puntiC + ' punti';
-            document.getElementById('final_c').innerText = puntiC;
-
-            // D) input diretto 0-14
-            const puntiD = Math.max(0, Math.min(14, Number(document.getElementById('griglia_d').value) || 0));
-            document.getElementById('final_d').innerText = puntiD;
-
-            // E) input diretto 0-17
-            const puntiE = Math.max(0, Math.min(17, Number(document.getElementById('griglia_e').value) || 0));
-            document.getElementById('final_e').innerText = puntiE;
-
-            // F) localizzazione (se CSV caricato e comune selezionato -> sovrascrive)
-            let puntiF_input = Number(document.getElementById('griglia_f').value) || 0;
-            const puntiF = Math.max(0, Math.min(8, puntiF_input)); // limitiamo a 8 come da note
-            document.getElementById('final_f').innerText = puntiF;
-
+            
+            // Criteri D, E, F - Input manuali
+            const puntiD = parseInt(document.getElementById('griglia_d').value) || 0;
+            const puntiE = parseInt(document.getElementById('griglia_e').value) || 0;
+            const puntiF = parseInt(document.getElementById('griglia_f').value) || 0;
+            
+            // Aggiorna visualizzazione
+            document.getElementById('final_a').textContent = puntiA;
+            document.getElementById('final_b').textContent = puntiB;
+            document.getElementById('final_c').textContent = puntiC;
+            
             const totale = puntiA + puntiB + puntiC + puntiD + puntiE + puntiF;
-            document.getElementById('punteggioTotale').innerText = totale;
-            document.getElementById('final_tot').innerText = totale;
+            document.getElementById('punteggioTotale').textContent = totale;
         }
 
-        // EXPORT PDF (html2canvas + jsPDF)
+        // Export PDF
         async function exportPDF() {
-            if (!risultati || !('fatturatoTotale' in risultati)) calcola();
+            if (!risultati.fatturatoTotale) {
+                alert('Prima calcola il business plan!');
+                return;
+            }
+            
             const report = document.getElementById('reportArea');
             try {
                 const canvas = await html2canvas(report, {scale: 2});
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
                 const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save('report-business-plan.pdf');
+                
+                const cliente = document.getElementById('denominazioneCliente').value || 'business-plan';
+                const filename = `report-${safeFileName(cliente)}.pdf`;
+                pdf.save(filename);
             } catch (err) {
                 alert('Errore esportazione PDF: ' + err.message);
             }
         }
 
-        // EXPORT EXCEL (SheetJS)
+        // Export Excel
         function exportExcel() {
-            if (!risultati || !('fatturatoTotale' in risultati)) calcola();
+            if (!risultati.fatturatoTotale) {
+                alert('Prima calcola il business plan!');
+                return;
+            }
+            
+            const cliente = document.getElementById('denominazioneCliente').value || 'business-plan';
             const wb = XLSX.utils.book_new();
-
-            // Input sheet
-            const inputObj = {
+            
+            // Foglio Input
+            const inputData = [{
+                Cliente: cliente,
                 NumeroCamere: risultati.numeroCamere,
                 GiorniApertura: risultati.giorniCalcolati,
-                ADR: Number(document.getElementById('adr').value) || 0,
-                FattRistorazione: Number(document.getElementById('fattRistorazione').value) || 0,
-                AltriRicavi: Number(document.getElementById('altriRicavi').value) || 0,
+                ADR: document.getElementById('adr').value,
                 InvestimentoTotale: risultati.investimentoTotale,
                 InvestimentiOperativi: risultati.investimentiOperativi,
                 DipendentiAttuali: risultati.dipAttuali,
                 DipendentiPrevisti: risultati.dipPrevisti
-            };
-            const inputsWS = XLSX.utils.json_to_sheet([inputObj]);
-            XLSX.utils.book_append_sheet(wb, inputsWS, 'Input');
-
-            // Results sheet
-            const resObj = {
+            }];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(inputData), 'Input');
+            
+            // Foglio Risultati
+            const resultsData = [{
                 FatturatoTotale: risultati.fatturatoTotale,
                 CostiOperativi: risultati.costiOperativi,
-                MOL: risultati.mol,
                 EBITDA: risultati.ebitda,
-                RisultatoOperativo: risultati.risultatoOperativo,
                 RisultatoNetto: risultati.risultatoNetto,
-                ROS_pct: risultati.ros,
-                ROI_pct: risultati.roi,
-                EBITDA_Margin_pct: risultati.ebitdaMargin,
-                TOR_pct: risultati.tor,
-                RevPAR: risultati.revpar,
-                GOPPAR: risultati.goppar,
-                LaborCost_pct: risultati.laborCostPerc,
-                Produttivita_per_ULA: risultati.produttivitaPerULA,
-                Inv_per_ULA: risultati.invPerULA
-            };
-            const resWS = XLSX.utils.json_to_sheet([resObj]);
-            XLSX.utils.book_append_sheet(wb, resWS, 'Risultati');
-
-            // Punteggi sheet
-            calcolaPunteggio();
-            const scores = {
-                A_InvestimentoOccupazione: document.getElementById('final_a').innerText,
-                B_InvestimentoOperativo: document.getElementById('final_b').innerText,
-                C_RisultatiEconomici: document.getElementById('final_c').innerText,
-                D_QualitaProgettuale: document.getElementById('final_d').innerText,
-                E_Sostenibilita: document.getElementById('final_e').innerText,
-                F_Localizzazione: document.getElementById('final_f').innerText,
-                Totale: document.getElementById('final_tot').innerText
-            };
-            const scoresWS = XLSX.utils.json_to_sheet([scores]);
-            XLSX.utils.book_append_sheet(wb, scoresWS, 'Punteggi');
-
-            XLSX.writeFile(wb, 'report-business-plan.xlsx');
+                ROS_pct: (risultati.ros * 100).toFixed(2),
+                ROI_pct: (risultati.roi * 100).toFixed(2),
+                EBITDA_Margin_pct: (risultati.ebitdaMargin * 100).toFixed(2),
+                TOR_pct: risultati.tor.toFixed(2),
+                RevPAR: risultati.revpar.toFixed(2),
+                GOPPAR: risultati.goppar.toFixed(2)
+            }];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resultsData), 'Risultati');
+            
+            const filename = `report-${safeFileName(cliente)}.xlsx`;
+            XLSX.writeFile(wb, filename);
         }
 
-        // init
-        updateFormVisibility();
-        updateOccupancy();
-        // Non eseguiamo calcola() all'avvio, per evitare errori prima che utente inserisca dati
+        // Utility functions
+        function formatNumber(num) {
+            return new Intl.NumberFormat('it-IT', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(Math.round(num));
+        }
+
+        function safeFileName(name) {
+            return name.replace(/[^a-z0-9\-_\s]/gi, '').replace(/\s+/g, '-').toLowerCase();
+        }
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFormVisibility();
+            updateOccupancy();
+            
+            // Event listener per aggiornare occupancy quando cambiano le camere
+            document.getElementById('numeroCamere').addEventListener('change', updateOccupancy);
+            document.getElementById('tipologiaStruttura').addEventListener('change', updateOccupancy);
+        });
     </script>
 </body>
 </html>
