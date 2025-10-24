@@ -1938,10 +1938,10 @@ RAGUSA;RG;M088;VITTORIA;1;0;1;0`;
             document.getElementById('h_immateriali_1').value = Math.round(investimentiImmobiliari * 0.4);
             document.getElementById('h_immateriali_2').value = Math.round(investimentiImmobiliari * 0.2);
             
-            const iva0 = Math.round((investimentiOperativi * 0.4 + investimentiImmobiliari * 0.4) * 0.22);
-            document.getElementById('h_iva_0').value = Math.round(iva0 * 0.4);
-            document.getElementById('h_iva_1').value = Math.round(iva0 * 0.4);
-            document.getElementById('h_iva_2').value = Math.round(iva0 * 0.2);
+            const iva = Math.round((investimentiOperativi + investimentiImmobiliari) * 0.22);
+            document.getElementById('h_iva_0').value = Math.round(iva * 0.4);
+            document.getElementById('h_iva_1').value = Math.round(iva * 0.4);
+            document.getElementById('h_iva_2').value = Math.round(iva * 0.2);
             
             document.getElementById('h_contributo_0').value = Math.round(contributo);
             
