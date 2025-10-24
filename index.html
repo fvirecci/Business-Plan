@@ -2056,32 +2056,32 @@ RAGUSA;RG;M088;VITTORIA;1;0;1;0`;
             
             const fatturatoTotale = fattCamere;
             
-            // Popola anno 202x
-            document.getElementById('l_fatt_0').value = (fatturatoTotale / 1000).toFixed(1);
-            document.getElementById('l_altri_ric_0').value = (altriRicaviTotali / 1000).toFixed(1);
+            // Popola anno 202x+2
+            document.getElementById('l_fatt_2').value = (fatturatoTotale / 1000).toFixed(1);
+            document.getElementById('l_altri_ric_2').value = (altriRicaviTotali / 1000).toFixed(1);
             
             // COSTI
             const materie = (parseFloat(document.getElementById('costiMaterie').value) || 0) / 1000;
             const servizi = ((parseFloat(document.getElementById('costiServizi').value) || 0) + (parseFloat(document.getElementById('costiBeni').value) || 0)) / 1000;
             const personale = (parseFloat(document.getElementById('costoPersonale').value) || 0) / 1000;
             
-            document.getElementById('l_materie_0').value = materie.toFixed(1);
-            document.getElementById('l_servizi_0').value = servizi.toFixed(1);
-            document.getElementById('l_personale_0').value = personale.toFixed(1);
+            document.getElementById('l_materie_2').value = materie.toFixed(1);
+            document.getElementById('l_servizi_2').value = servizi.toFixed(1);
+            document.getElementById('l_personale_2').value = personale.toFixed(1);
             
             // AMMORTAMENTI DAL TAB DATI ECONOMICI
             const ammImm = (parseFloat(document.getElementById('ammImmateriali').value) || 0) / 1000;
             const ammMat = (parseFloat(document.getElementById('ammMateriali').value) || 0) / 1000;
-            document.getElementById('l_amm_imm_0').value = ammImm.toFixed(1);
-            document.getElementById('l_amm_mat_0').value = ammMat.toFixed(1);
+            document.getElementById('l_amm_imm_2').value = ammImm.toFixed(1);
+            document.getElementById('l_amm_mat_2').value = ammMat.toFixed(1);
             
             // GESTIONE FINANZIARIA (negativa)
             const oneriFin = (parseFloat(document.getElementById('oneriFin').value) || 0) / 1000;
-            document.getElementById('l_gest_fin_0').value = (-oneriFin).toFixed(1);
+            document.getElementById('l_gest_fin_2').value = (-oneriFin).toFixed(1);
             
             // IMPOSTE
             const imposte = (parseFloat(document.getElementById('imposte').value) || 0) / 1000;
-            document.getElementById('l_imposte_0').value = imposte.toFixed(1);
+            document.getElementById('l_imposte_2').value = imposte.toFixed(1);
             
             // Se impresa attiva, popola anno precedente
             const statoImpresa = document.getElementById('impresaStato').value;
