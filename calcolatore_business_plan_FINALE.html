@@ -1670,8 +1670,7 @@ RAGUSA;RG;M088;VITTORIA;1;0;1;0`;
             document.getElementById('comuneLookupResult').value = entry ? `${res.detail} — Punteggio: ${entry.punteggio}` : 'Non presente';
             const override = document.getElementById('overrideF').checked;
             if (!override) document.getElementById('griglia_f').value = res.points;
-            if (typeof calcolaPunteggio === 'function') calcolaPunteggio();
-        }
+         }
 
         function toggleOverrideF() {
             const cb = document.getElementById('overrideF');
