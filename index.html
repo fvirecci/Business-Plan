@@ -2056,9 +2056,9 @@ RAGUSA;RG;M088;VITTORIA;1;0;1;0`;
             
             const fatturatoTotale = fattCamere;
             
-            // Popola anno 202x+2
-            document.getElementById('l_fatt_2').value = (fatturatoTotale / 1000).toFixed(1);
-            document.getElementById('l_altri_ric_2').value = (altriRicaviTotali / 1000).toFixed(1);
+            // Popola anno 202x
+            document.getElementById('l_fatt_0').value = (fatturatoTotale / 1000).toFixed(1);
+            document.getElementById('l_altri_ric_0').value = (altriRicaviTotali / 1000).toFixed(1);
             
             // COSTI
             const materie = (parseFloat(document.getElementById('costiMaterie').value) || 0) / 1000;
