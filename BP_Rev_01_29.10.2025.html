@@ -182,26 +182,130 @@
                 </div>
                 
                 <div class="section">
-                    <h2>Dati Investimento</h2>
-                    <div class="input-grid">
-                        <div class="input-group">
-                            <label>Investimento Totale (€) *</label>
-                            <input type="number" id="investimentoTotale" value="0" min="62500" max="3500000" onchange="validaContributo()">
-                        </div>
-                        <div class="input-group">
-                            <label>Investimenti Operativi (€) *</label>
-                            <input type="number" id="investimentiOperativi" value="0" min="0">
-                            <span class="hint">Macchinari, impianti, arredi, attrezzature, software </span>
-                        </div>
-                        <div class="input-group">
-                            <label>Investimenti Immobiliari (€)</label>
-                            <input type="number" id="investimentiImmobiliari" value="0" min="0">
-                        </div>
-			<div class="input-group">
-    			<label>IVA sugli Investimenti (€) *</label>
-		    	<input type="number" id="ivaInvestimenti" value="0" min="0" class="highlight-field">
-    			<span class="hint">IVA totale</span>
-			</div>
+    <h2>Dettaglio Investimenti con Limiti Bando</h2>
+    
+    <div class="alert alert-info">
+        <strong>ℹ️ Limiti Ammissibilità:</strong> Parte Edile max 70%, Spese Tecniche max 4%, Consulenze max 2%, Informatiche max 20%
+    </div>
+    
+    <table class="quadro-table" style="margin-bottom: 20px;">
+        <thead>
+            <tr>
+                <th style="width: 30%;">Voce Investimento</th>
+                <th style="width: 18%;">Importo Ammesso (€)</th>
+                <th style="width: 13%;">IVA (€)</th>
+                <th style="width: 13%;">Totale (€)</th>
+                <th style="width: 13%;">Contributo (€)</th>
+                <th style="width: 13%;">% su Totale</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- PARTE EDILE -->
+            <tr id="row_edile">
+                <td class="label-cell">
+                    <strong>Parte Edile</strong>
+                    <span style="font-size: 11px; color: #666;"><br>(max 70% investimento)</span>
+                </td>
+                <td><input type="number" id="inv_edile_importo" value="0" min="0" step="1000" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td><input type="number" id="inv_edile_iva" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_edile_totale" style="text-align: right; font-weight: bold;">0</td>
+                <td><input type="number" id="inv_edile_contributo" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_edile_perc" style="text-align: center;">0%</td>
+            </tr>
+            
+            <!-- ATTREZZATURE/ARREDI -->
+            <tr id="row_attrezzature">
+                <td class="label-cell"><strong>Attrezzature/Arredi</strong></td>
+                <td><input type="number" id="inv_attrezzature_importo" value="0" min="0" step="1000" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td><input type="number" id="inv_attrezzature_iva" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_attrezzature_totale" style="text-align: right; font-weight: bold;">0</td>
+                <td><input type="number" id="inv_attrezzature_contributo" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_attrezzature_perc" style="text-align: center;">-</td>
+            </tr>
+            
+            <!-- SPESE TECNICHE -->
+            <tr id="row_tecniche">
+                <td class="label-cell">
+                    <strong>Spese Tecniche</strong>
+                    <span style="font-size: 11px; color: #666;"><br>(max 4% investimento)</span>
+                </td>
+                <td><input type="number" id="inv_tecniche_importo" value="0" min="0" step="500" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td><input type="number" id="inv_tecniche_iva" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_tecniche_totale" style="text-align: right; font-weight: bold;">0</td>
+                <td><input type="number" id="inv_tecniche_contributo" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_tecniche_perc" style="text-align: center;">0%</td>
+            </tr>
+            
+            <!-- SPESE CONSULENZE -->
+            <tr id="row_consulenze">
+                <td class="label-cell">
+                    <strong>Spese Consulenze</strong>
+                    <span style="font-size: 11px; color: #666;"><br>(max 2% investimento)</span>
+                </td>
+                <td><input type="number" id="inv_consulenze_importo" value="0" min="0" step="500" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td><input type="number" id="inv_consulenze_iva" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_consulenze_totale" style="text-align: right; font-weight: bold;">0</td>
+                <td><input type="number" id="inv_consulenze_contributo" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_consulenze_perc" style="text-align: center;">0%</td>
+            </tr>
+            
+            <!-- SPESE INFORMATICHE -->
+            <tr id="row_informatiche">
+                <td class="label-cell">
+                    <strong>Spese Informatiche</strong>
+                    <span style="font-size: 11px; color: #666;"><br>(max 20% investimento)</span>
+                </td>
+                <td><input type="number" id="inv_informatiche_importo" value="0" min="0" step="500" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td><input type="number" id="inv_informatiche_iva" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_informatiche_totale" style="text-align: right; font-weight: bold;">0</td>
+                <td><input type="number" id="inv_informatiche_contributo" value="0" min="0" oninput="calcolaDettaglioInvestimenti()"></td>
+                <td id="inv_informatiche_perc" style="text-align: center;">0%</td>
+            </tr>
+            
+            <!-- TOTALI -->
+            <tr class="total-row" style="background: #cfe2ff; font-size: 14px;">
+                <td><strong>TOTALE INVESTIMENTO</strong></td>
+                <td id="inv_tot_importo" style="text-align: right; font-weight: bold;">0</td>
+                <td id="inv_tot_iva" style="text-align: right; font-weight: bold;">0</td>
+                <td id="inv_tot_totale" style="text-align: right; font-weight: bold;">0</td>
+                <td id="inv_tot_contributo" style="text-align: right; font-weight: bold;">0</td>
+                <td style="text-align: center;">100%</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- ALERT VALIDAZIONE -->
+    <div id="alert_limiti" class="alert alert-warning" style="display: none;">
+        <strong>⚠️ Limiti superati:</strong>
+        <ul id="alert_limiti_dettaglio" style="margin: 10px 0 0 20px; padding: 0;"></ul>
+    </div>
+    
+    <!-- RIEPILOGO AUTOMATICO -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;">
+        <div style="background: #e8f4f8; padding: 15px; border-radius: 8px;">
+            <label style="font-size: 12px; color: #666;">Investimenti Immobiliari</label>
+            <div id="riepilogo_immobiliari" style="font-size: 24px; font-weight: bold; color: #1e3c72;">€0</div>
+            <span style="font-size: 11px; color: #888;">Parte Edile</span>
+        </div>
+        <div style="background: #e8f4f8; padding: 15px; border-radius: 8px;">
+            <label style="font-size: 12px; color: #666;">Investimenti Operativi</label>
+            <div id="riepilogo_operativi" style="font-size: 24px; font-weight: bold; color: #1e3c72;">€0</div>
+            <span style="font-size: 11px; color: #888;">Attrezzature + Informatiche</span>
+        </div>
+        <div style="background: #d4edda; padding: 15px; border-radius: 8px;">
+            <label style="font-size: 12px; color: #666;">Contributo Totale Richiesto</label>
+            <div id="riepilogo_contributo" style="font-size: 24px; font-weight: bold; color: #155724;">€0</div>
+            <span style="font-size: 11px; color: #888;">Totale agevolazione</span>
+        </div>
+    </div>
+    
+    <!-- CAMPI NASCOSTI PER COMPATIBILITÀ -->
+    <input type="hidden" id="investimentoTotale" value="0">
+    <input type="hidden" id="investimentiOperativi" value="0">
+    <input type="hidden" id="investimentiImmobiliari" value="0">
+    <input type="hidden" id="ivaInvestimenti" value="0">
+    <input type="hidden" id="contributoRichiesto" value="0">
+</div>
 			<div class="input-group" style="grid-column: 1 / -1; margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px;">
     			<label style="font-size: 16px; color: #1e3c72; margin-bottom: 15px;">⏱️ Ripartizione Temporale Investimenti</label>
     			<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
@@ -3000,7 +3104,106 @@ if (Math.abs(diffTot) < 1) {
             updateFormVisibility();
             applyLocalizzazioneLookup();
         });
+		function calcolaDettaglioInvestimenti() {
+    const voci = ['edile', 'attrezzature', 'tecniche', 'consulenze', 'informatiche'];
+    
+    let totImporto = 0;
+    let totIva = 0;
+    let totTotale = 0;
+    let totContributo = 0;
+    
+    // CALCOLA TOTALI
+    voci.forEach(voce => {
+        const importo = parseFloat(document.getElementById(`inv_${voce}_importo`).value) || 0;
+        const iva = parseFloat(document.getElementById(`inv_${voce}_iva`).value) || 0;
+        const contributo = parseFloat(document.getElementById(`inv_${voce}_contributo`).value) || 0;
+        const totale = importo + iva;
+        
+        document.getElementById(`inv_${voce}_totale`).textContent = totale.toLocaleString('it-IT', {minimumFractionDigits: 2});
+        
+        totImporto += importo;
+        totIva += iva;
+        totTotale += totale;
+        totContributo += contributo;
+    });
+    
+    // MOSTRA TOTALI
+    document.getElementById('inv_tot_importo').textContent = totImporto.toLocaleString('it-IT', {minimumFractionDigits: 2});
+    document.getElementById('inv_tot_iva').textContent = totIva.toLocaleString('it-IT', {minimumFractionDigits: 2});
+    document.getElementById('inv_tot_totale').textContent = totTotale.toLocaleString('it-IT', {minimumFractionDigits: 2});
+    document.getElementById('inv_tot_contributo').textContent = totContributo.toLocaleString('it-IT', {minimumFractionDigits: 2});
+    
+    // CALCOLA PERCENTUALI
+    const limiti = {
+        edile: 70,
+        tecniche: 4,
+        consulenze: 2,
+        informatiche: 20
+    };
+    
+    let errori = [];
+    
+    voci.forEach(voce => {
+        const importo = parseFloat(document.getElementById(`inv_${voce}_importo`).value) || 0;
+        const perc = totImporto > 0 ? (importo / totImporto * 100) : 0;
+        const percCell = document.getElementById(`inv_${voce}_perc`);
+        const row = document.getElementById(`row_${voce}`);
+        
+        if (voce !== 'attrezzature') {
+            percCell.textContent = perc.toFixed(2) + '%';
+            
+            // VALIDAZIONE LIMITI
+            if (limiti[voce] && perc > limiti[voce]) {
+                percCell.style.color = '#721c24';
+                percCell.style.fontWeight = 'bold';
+                row.style.background = '#f8d7da';
+                errori.push(`${voce.charAt(0).toUpperCase() + voce.slice(1)}: ${perc.toFixed(2)}% (max ${limiti[voce]}%)`);
+            } else {
+                percCell.style.color = '#155724';
+                percCell.style.fontWeight = 'normal';
+                row.style.background = perc > 0 ? '#d4edda' : 'white';
+            }
+        } else {
+            percCell.textContent = '-';
+            row.style.background = 'white';
+        }
+    });
+    
+    // MOSTRA/NASCONDI ALERT
+    if (errori.length > 0) {
+        document.getElementById('alert_limiti').style.display = 'block';
+        const ul = document.getElementById('alert_limiti_dettaglio');
+        ul.innerHTML = '';
+        errori.forEach(err => {
+            const li = document.createElement('li');
+            li.textContent = err;
+            ul.appendChild(li);
+        });
+    } else {
+        document.getElementById('alert_limiti').style.display = 'none';
+    }
+    
+    // AGGIORNA RIEPILOGO
+    const edileImporto = parseFloat(document.getElementById('inv_edile_importo').value) || 0;
+    const attrezzatureImporto = parseFloat(document.getElementById('inv_attrezzature_importo').value) || 0;
+    const informaticheImporto = parseFloat(document.getElementById('inv_informatiche_importo').value) || 0;
+    
+    document.getElementById('riepilogo_immobiliari').textContent = '€' + edileImporto.toLocaleString('it-IT');
+    document.getElementById('riepilogo_operativi').textContent = '€' + (attrezzatureImporto + informaticheImporto).toLocaleString('it-IT');
+    document.getElementById('riepilogo_contributo').textContent = '€' + totContributo.toLocaleString('it-IT');
+    
+    // AGGIORNA CAMPI NASCOSTI PER COMPATIBILITÀ
+    document.getElementById('investimentoTotale').value = totTotale;
+    document.getElementById('investimentiOperativi').value = attrezzatureImporto + informaticheImporto;
+    document.getElementById('investimentiImmobiliari').value = edileImporto;
+    document.getElementById('ivaInvestimenti').value = totIva;
+    document.getElementById('contributoRichiesto').value = totContributo;
+    
+    // VALIDA ANCHE IL REGIME
+    validaContributo();
+}
     </script>
 </body>
 </html>
+
 
