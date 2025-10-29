@@ -2418,8 +2418,8 @@ if (Math.abs(diffTot) < 1) {
                 
                 if (investimentoPerULA <= soglia) {
                     punteggi.a = 2;
-                    if (investimentoPerULA <= soglia * 0.67) punteggi.a = 4;
-                    if (investimentoPerULA <= soglia * 0.5) punteggi.a = 6;
+                    if (investimentoPerULA <= soglia / 1.5) punteggi.a = 4;
+                    if (investimentoPerULA <= soglia / 2) punteggi.a = 6;
                 }
                 
                 document.getElementById('griglia_invula').textContent = '€' + Math.round(investimentoPerULA).toLocaleString('it-IT');
@@ -3003,3 +3003,4 @@ if (Math.abs(diffTot) < 1) {
     </script>
 </body>
 </html>
+
